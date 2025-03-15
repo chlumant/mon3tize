@@ -4,44 +4,39 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.*
+import cz.cvut.fit.chlumant.demoApp.ui.AppNavigation
 import cz.cvut.fit.chlumant.demoApp.ui.theme.DemoAppTheme
+import cz.cvut.fit.chlumant.demoApp.data.*
+import androidx.lifecycle.lifecycleScope
+import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
+    private lateinit var userPreferences: UserPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        userPreferences = UserPreferences(applicationContext)
+
         setContent {
             DemoAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+
+                val isFirstLaunch by userPreferences.isFirstLaunch.collectAsState(initial = true)
+                LaunchedEffect(isFirstLaunch) {
+                    if (isFirstLaunch) {
+                        navController.navigate("freemium")
+                        lifecycleScope.launch {
+                            userPreferences.setFirstLaunch(false)
+                        }
+                    }
                 }
+                AppNavigation(navController)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DemoAppTheme {
-        Greeting("Android")
     }
 }

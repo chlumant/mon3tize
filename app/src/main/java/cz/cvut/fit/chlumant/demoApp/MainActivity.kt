@@ -1,6 +1,7 @@
 package cz.cvut.fit.chlumant.demoApp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private lateinit var userPreferences: UserPreferences
 
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -25,12 +27,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             DemoAppTheme {
                 val navController = rememberNavController()
+                val isFirstLaunch by userPreferences.isFirstLaunch.collectAsState(initial = null)
 
-                val isFirstLaunch by userPreferences.isFirstLaunch.collectAsState(initial = true)
                 LaunchedEffect(isFirstLaunch) {
-                    if (isFirstLaunch) {
+                    if (isFirstLaunch == true) {
+
                         navController.navigate("freemium")
-                        lifecycleScope.launch {
+                            lifecycleScope.launch {
                             userPreferences.setFirstLaunch(false)
                         }
                     }

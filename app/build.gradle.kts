@@ -42,6 +42,10 @@ android {
 dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.datastore)
+    implementation(libs.billing)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
 
     implementation(libs.androidx.core.ktx)

@@ -12,15 +12,17 @@ import cz.cvut.fit.chlumant.demoApp.data.*
 import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.*
 import kotlinx.coroutines.launch
+import com.google.android.gms.ads.MobileAds
 
 
 class MainActivity : ComponentActivity() {
     private lateinit var userPreferences: UserPreferences
-
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        MobileAds.initialize(this) { }
 
         userPreferences = UserPreferences(applicationContext)
 

@@ -6,38 +6,54 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.*
-import cz.cvut.fit.chlumant.demoApp.ui.AppNavigation
-import cz.cvut.fit.chlumant.demoApp.ui.theme.DemoAppTheme
-import cz.cvut.fit.chlumant.demoApp.data.*
 import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.*
 import kotlinx.coroutines.launch
 import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+
+import cz.cvut.fit.chlumant.demoApp.ui.AppNavigation
+import cz.cvut.fit.chlumant.demoApp.ui.theme.DemoAppTheme
+
+import cz.cvut.fit.chlumant.mon3tize.*
 
 
 class MainActivity : ComponentActivity() {
-    private lateinit var userPreferences: UserPreferences
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Mon3tize.setUp(
+            configuration = Mon3tizeConfiguration(
+                enableFreemium = true,
+                adMob = AdMob.Enabled("ca-app-pub-3940256099942544/6300978111")
+            ),
+            context = applicationContext
+        )
+
         enableEdgeToEdge()
 
-        MobileAds.initialize(this) { }
+        val backgroundScope = CoroutineScope(Dispatchers.IO)
+        backgroundScope.launch {
+            MobileAds.initialize(this@MainActivity) { }
+        }
 
-        userPreferences = UserPreferences(applicationContext)
 
         setContent {
             DemoAppTheme {
                 val navController = rememberNavController()
-                val isFirstLaunch by userPreferences.isFirstLaunch.collectAsState(initial = null)
 
-                LaunchedEffect(isFirstLaunch) {
-                    if (isFirstLaunch == true) {
+                val isFirstLaunch by Mon3tize.freemiumFlow
+                    .collectAsState(initial = false)
 
+                val showIntro by Mon3tize.isFirstLaunch
+                    .collectAsState(initial = null)
+
+                LaunchedEffect(showIntro) {
+                    if (showIntro == true) {
                         navController.navigate("freemium")
-                            lifecycleScope.launch {
-                            userPreferences.setFirstLaunch(false)
-                        }
+                        Mon3tize.setFirstLaunch(false)
                     }
                 }
                 AppNavigation(navController)

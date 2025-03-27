@@ -29,8 +29,12 @@ fun HomeScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
         interstitialAdManager.loadAd()
     }
+
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            AdBanner("ca-app-pub-3940256099942544/6300978111")
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier

@@ -1,13 +1,13 @@
-package cz.cvut.fit.chlumant.demoApp.data
+package cz.cvut.fit.chlumant.mon3tize.adManagers
 
 import android.app.Activity
 import android.util.Log
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.FullScreenContentCallback
 
 class InterstitialAdManager(private val activity: Activity, private val adUnitId: String) {
     private var interstitialAd: InterstitialAd? = null

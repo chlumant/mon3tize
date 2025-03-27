@@ -5,8 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import cz.cvut.fit.chlumant.mon3tize.components.AdBanner
 import kotlinx.coroutines.flow.Flow
+import android.content.pm.PackageManager
+import android.util.Log
 
 object Mon3tize {
 
@@ -19,6 +20,7 @@ object Mon3tize {
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
         this.freemiumManager = FreemiumManager(context.applicationContext)
+        validateAdMobManifestConfig(context)
     }
 
     suspend fun enableFreemium() {
@@ -49,4 +51,20 @@ object Mon3tize {
             content()
         }
     }
+
+    private fun validateAdMobManifestConfig(context: Context) {
+        val appId = try {
+            val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+            ai.metaData?.getString("com.google.android.gms.ads.APPLICATION_ID")
+        } catch (e: Exception) {
+            null
+        }
+
+        if (appId.isNullOrBlank()) {
+            Log.e("Mon3tize", "AdMob App ID is missing from AndroidManifest.xml")
+        } else {
+            Log.d("Mon3tize", "AdMob App ID found: $appId")
+        }
+    }
+
 }

@@ -27,6 +27,8 @@ class MainActivity : ComponentActivity() {
         Mon3tize.setUp(
             configuration = Mon3tizeConfiguration(
                 enableFreemium = true,
+
+                //tenhle parametr by melo byt to AdMob appID?
                 adMob = AdMob.Enabled("ca-app-pub-3940256099942544/6300978111")
             ),
             context = applicationContext

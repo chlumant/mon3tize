@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import cz.cvut.fit.chlumant.demoApp.data.RewardedAdManager
+import cz.cvut.fit.chlumant.mon3tize.adManagers.RewardedAdManager
 //import cz.cvut.fit.chlumant.demoApp.data.BillingManager
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 

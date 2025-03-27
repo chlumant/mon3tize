@@ -18,7 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 
 
-import cz.cvut.fit.chlumant.demoApp.data.InterstitialAdManager
+import cz.cvut.fit.chlumant.mon3tize.adManagers.InterstitialAdManager
 import cz.cvut.fit.chlumant.demoApp.ui.components.*
 
 @Composable

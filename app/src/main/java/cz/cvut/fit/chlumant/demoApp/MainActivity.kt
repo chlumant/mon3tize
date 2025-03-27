@@ -46,18 +46,16 @@ class MainActivity : ComponentActivity() {
             DemoAppTheme {
                 val navController = rememberNavController()
 
-                val isFirstLaunch by Mon3tize.freemiumFlow
-                    .collectAsState(initial = false)
+                //val isFreemiumActive by Mon3tize.isFreemiumActive.collectAsState(initial = false)
+                val isFirstLaunch by Mon3tize.isFirstLaunch.collectAsState(initial = null)
 
-                val showIntro by Mon3tize.isFirstLaunch
-                    .collectAsState(initial = null)
-
-                LaunchedEffect(showIntro) {
-                    if (showIntro == true) {
+                LaunchedEffect(isFirstLaunch) {
+                    if (isFirstLaunch == true && Mon3tize.isFreemiumSupported) {
                         navController.navigate("freemium")
                         Mon3tize.setFirstLaunch(false)
                     }
                 }
+
                 AppNavigation(navController)
             }
         }

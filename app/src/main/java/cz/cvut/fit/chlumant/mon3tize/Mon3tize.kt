@@ -23,30 +23,35 @@ object Mon3tize {
         validateAdMobManifestConfig(context)
     }
 
+    val isFreemiumSupported: Boolean
+        get() = configuration?.enableFreemium == true
+
+    val isFreemiumActive: Flow<Boolean>
+        get() = freemiumManager.isFreemiumEnabled
+
+    val isFirstLaunch: Flow<Boolean>
+        get() = freemiumManager.isFirstLaunch
+
+    suspend fun setFirstLaunch(value: Boolean) {
+        freemiumManager.setFirstLaunch(value)
+    }
+
     suspend fun enableFreemium() {
-        freemiumManager.enableFreemium()
+        if (isFreemiumSupported) {
+            freemiumManager.enableFreemium()
+        }
     }
 
     suspend fun disableFreemium() {
         freemiumManager.disableFreemium()
     }
 
-    val freemiumFlow: Flow<Boolean>
-        get() = freemiumManager.isFreemiumEnabled
-
-    suspend fun setFirstLaunch(value: Boolean) {
-        freemiumManager.setFirstLaunch(value)
-    }
-
-    val isFirstLaunch: Flow<Boolean>
-        get() = freemiumManager.isFirstLaunch
-
     @Composable
     fun LockedContent(
         modifier: Modifier = Modifier,
         content: @Composable () -> Unit
     ) {
-        val freemium by freemiumFlow.collectAsState(initial = false)
+        val freemium by isFreemiumActive.collectAsState(initial = false)
         if (freemium) {
             content()
         }

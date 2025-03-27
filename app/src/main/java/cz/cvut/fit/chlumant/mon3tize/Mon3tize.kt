@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import cz.cvut.fit.chlumant.mon3tize.components.BannerAd
+import cz.cvut.fit.chlumant.mon3tize.components.AdBanner
 import kotlinx.coroutines.flow.Flow
 
 object Mon3tize {
@@ -38,14 +38,6 @@ object Mon3tize {
 
     val isFirstLaunch: Flow<Boolean>
         get() = freemiumManager.isFirstLaunch
-
-    object Ads {
-        @Composable
-        fun Banner(modifier: Modifier = Modifier) {
-            val adMobKey = (configuration?.adMob as? AdMob.Enabled)?.key ?: return
-            BannerAd(modifier = modifier, adUnitId = adMobKey)
-        }
-    }
 
     @Composable
     fun LockedContent(

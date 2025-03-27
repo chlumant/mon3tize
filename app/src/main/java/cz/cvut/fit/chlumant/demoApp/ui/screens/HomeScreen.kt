@@ -25,7 +25,7 @@ import cz.cvut.fit.chlumant.mon3tize.components.AdBanner
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val context = LocalContext.current
-    val interstitialAdManager = remember { InterstitialAdManager(context as Activity, "ca-app-pub-3940256099942544/1033173712") }
+    val interstitialAdManager = remember { InterstitialAdManager(context as Activity, UserKeys.AdMob.INTERSTITIAL_DEMO) }
 
     LaunchedEffect(Unit) {
         interstitialAdManager.loadAd()
@@ -34,7 +34,7 @@ fun HomeScreen(navController: NavHostController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            AdBanner("ca-app-pub-3940256099942544/6300978111")
+            AdBanner(UserKeys.AdMob.BANNER_DEMO)
         }
     ) { innerPadding ->
         Column(

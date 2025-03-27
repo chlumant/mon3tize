@@ -17,13 +17,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cz.cvut.fit.chlumant.mon3tize.adManagers.RewardedAdManager
-//import cz.cvut.fit.chlumant.demoApp.data.BillingManager
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 
 @Composable
 fun PaymentScreen(navController: NavHostController) {
     val context = LocalContext.current
-    val rewardedAdManager = remember { RewardedAdManager(context as Activity, "ca-app-pub-3940256099942544/5224354917") }
+    val rewardedAdManager = remember { RewardedAdManager(context as Activity, UserKeys.AdMob.REWARDED_DEMO) }
 
     LaunchedEffect(Unit) {
         rewardedAdManager.loadAd()

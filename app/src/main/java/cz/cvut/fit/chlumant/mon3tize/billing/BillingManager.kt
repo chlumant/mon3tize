@@ -10,8 +10,14 @@ class BillingManager(
     private val listener: PurchasesUpdatedListener
 ) {
 
+    init {
+        Log.d("BillingManager", "BillingClient built, version 7.1.1")
+    }
+
+    @Suppress("DEPRECATION")
     private val billingClient: BillingClient = BillingClient.newBuilder(context)
         .setListener(listener)
+        .enablePendingPurchases()
         .build()
 
     fun startConnection(onReady: () -> Unit) {
@@ -45,10 +51,13 @@ class BillingManager(
 
         billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                Log.d("BillingManager", "Queried subscriptions: ${productDetailsList.size}")
-                onResult(productDetailsList.firstOrNull())
+                val result = productDetailsList.firstOrNull()
+                if (result == null) {
+                    Log.e("BillingManager", "No matching product found for $productId")
+                }
+                onResult(result)
             } else {
-                Log.e("BillingManager", "Failed to query subscriptions: ${billingResult.debugMessage}")
+                Log.e("BillingManager", "Query failed: ${billingResult.debugMessage}")
                 onResult(null)
             }
         }

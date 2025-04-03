@@ -16,10 +16,10 @@ class FreemiumManager(private val context: Context) {
     //+ pridat nejakou private val - tenhle user ma aktivni freemium?
 
     val isFreemiumEnabled: Flow<Boolean> = context.dataStore.data
-        .map { prefs -> prefs[FREEMIUM_KEY] ?: false }
+        .map { prefs -> prefs[FREEMIUM_KEY] == true }
 
     val isFirstLaunch: Flow<Boolean> = context.dataStore.data
-        .map { prefs -> prefs[FIRST_LAUNCH_KEY] ?: true }
+        .map { prefs -> prefs[FIRST_LAUNCH_KEY] != false }
 
 
     //enable a disable asi neni vubec potreba ne - proste nastavim na zacatku v Mon3tize.setUp a pak uz se an to nesaha?

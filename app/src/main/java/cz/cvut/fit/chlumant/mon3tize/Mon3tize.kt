@@ -8,13 +8,13 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.Flow
 import android.content.pm.PackageManager
 import android.util.Log
+import android.annotation.SuppressLint
 
 object Mon3tize {
 
     private var configuration: Mon3tizeConfiguration? = null
 
-//    nemel by byt leak kdyz je to globalni applicationContext ne?
-    @Suppress("StaticFieldLeak")
+    @SuppressLint("StaticFieldLeak")
     private lateinit var freemiumManager: FreemiumManager
 
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
@@ -61,7 +61,7 @@ object Mon3tize {
         val appId = try {
             val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
             ai.metaData?.getString("com.google.android.gms.ads.APPLICATION_ID")
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 

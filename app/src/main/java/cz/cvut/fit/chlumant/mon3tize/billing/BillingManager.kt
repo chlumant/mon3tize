@@ -63,7 +63,43 @@ class BillingManager(
         }
     }
 
-    fun launchPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
+    fun queryOneTimeProduct(productId: String, onResult: (ProductDetails?) -> Unit) {
+        val params = QueryProductDetailsParams.newBuilder()
+            .setProductList(
+                listOf(
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(productId)
+                        .setProductType(BillingClient.ProductType.INAPP)
+                        .build()
+                )
+            )
+            .build()
+
+        billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                onResult(productDetailsList.firstOrNull())
+            } else {
+                Log.e("BillingManager", "Query failed: ${billingResult.debugMessage}")
+                onResult(null)
+            }
+        }
+    }
+
+    fun launchInAppPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
+        val billingFlowParams = BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(
+                listOf(
+                    BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(productDetails)
+                        .build()
+                )
+            )
+            .build()
+
+        billingClient.launchBillingFlow(activity, billingFlowParams)
+    }
+
+    fun launchSubscriptionPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
         val offerToken = productDetails.subscriptionOfferDetails?.firstOrNull()?.offerToken ?: run {
             Log.e("BillingManager", "No offer token available for product ${productDetails.productId}")
             return

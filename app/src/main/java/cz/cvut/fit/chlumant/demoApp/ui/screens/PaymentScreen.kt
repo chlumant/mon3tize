@@ -42,20 +42,24 @@ fun PaymentScreen(navController: NavHostController) {
         })
     }
 
-    var productDetails by remember { mutableStateOf<ProductDetails?>(null) }
+    var subscriptionProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
+    var oneTimeProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
 
     LaunchedEffect(Unit) {
         try {
             rewardedAdManager.loadAd()
-
             billingManager.startConnection {
                 billingManager.querySubscriptions("subscription_test_01") { details ->
                     if (details != null) {
                         Log.d("PaymentScreen", "Subscription loaded: ${details.name}")
-                        productDetails = details
+                        subscriptionProductDetails = details
                     } else {
                         Log.e("PaymentScreen", "Subscription productDetails was null")
                     }
+                }
+
+                billingManager.queryOneTimeProduct("remove_ads_test_01") {
+                    oneTimeProductDetails = it
                 }
             }
         } catch (e: Exception) {
@@ -92,8 +96,8 @@ fun PaymentScreen(navController: NavHostController) {
 
             Button(
                 onClick = {
-                    productDetails?.let {
-                        billingManager.launchPurchaseFlow(activity, it)
+                    subscriptionProductDetails?.let {
+                        billingManager.launchSubscriptionPurchaseFlow(activity, it)
                     } ?: run {
                         Log.e("PaymentScreen", "Subscription productDetails not loaded")
                     }
@@ -101,6 +105,17 @@ fun PaymentScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             ) {
                 Text("Buy Subscription")
+            }
+
+            Button(
+                onClick = {
+                    oneTimeProductDetails?.let {
+                        billingManager.launchInAppPurchaseFlow(activity, it)
+                    } ?: Log.e("PaymentScreen", "One-time product not loaded")
+                },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Text("Jednorázový nákup")
             }
 
             NavigationButton(navController, "Zpět na Home", "home")

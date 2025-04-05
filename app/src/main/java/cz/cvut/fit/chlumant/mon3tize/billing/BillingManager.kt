@@ -77,7 +77,13 @@ class BillingManager(
 
         billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                onResult(productDetailsList.firstOrNull())
+                val result = productDetailsList.firstOrNull()
+                if (result == null) {
+                    Log.e("BillingManager", "One-time test product not found.")
+                } else {
+                    Log.d("BillingManager", "One-time test product loaded: ${result.name}")
+                }
+                onResult(result)
             } else {
                 Log.e("BillingManager", "Query failed: ${billingResult.debugMessage}")
                 onResult(null)
@@ -96,7 +102,9 @@ class BillingManager(
             )
             .build()
 
-        billingClient.launchBillingFlow(activity, billingFlowParams)
+        val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+        Log.e("BillingManager", "Query failed: ${billingResult.responseCode} - ${billingResult.debugMessage}")
+
     }
 
     fun launchSubscriptionPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
@@ -104,7 +112,6 @@ class BillingManager(
             Log.e("BillingManager", "No offer token available for product ${productDetails.productId}")
             return
         }
-
         val billingFlowParams = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(
                 listOf(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "68214838435",
+    "project_id": "demoapp-79075",
+    "storage_bucket": "demoapp-79075.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68214838435:android:ec6033fde0be20a34d1b16",
+        "android_client_info": {
+          "package_name": "cz.cvut.fit.chlumant.demoApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAc4GUfWkoYihJc3a_PnnE21bY2phDs20"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

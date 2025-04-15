@@ -15,5 +15,6 @@ class Mon3tizeDemoApp : Application() {
             ),
             context = applicationContext
         )
+
     }
 }

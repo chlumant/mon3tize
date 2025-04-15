@@ -9,16 +9,28 @@ import kotlinx.coroutines.flow.Flow
 import android.content.pm.PackageManager
 import android.util.Log
 import android.annotation.SuppressLint
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 
 object Mon3tize {
 
     private var configuration: Mon3tizeConfiguration? = null
 
     @SuppressLint("StaticFieldLeak")
-    private lateinit var freemiumManager: FreemiumManager
+    lateinit var freemiumManager: FreemiumManager
 
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
+
+        if (FirebaseApp.getApps(context).isEmpty()) {
+            FirebaseApp.initializeApp(context)
+        }
+
+        val auth = FirebaseAuth.getInstance()
+        if (auth.currentUser == null) {
+            auth.signInAnonymously()
+        }
+
         this.freemiumManager = FreemiumManager(context.applicationContext)
         validateAdMobManifestConfig(context)
     }
@@ -34,16 +46,6 @@ object Mon3tize {
 
     suspend fun setFirstLaunch(value: Boolean) {
         freemiumManager.setFirstLaunch(value)
-    }
-
-    suspend fun enableFreemium() {
-        if (isFreemiumSupported) {
-            freemiumManager.enableFreemium()
-        }
-    }
-
-    suspend fun disableFreemium() {
-        freemiumManager.disableFreemium()
     }
 
     @Composable
@@ -71,5 +73,4 @@ object Mon3tize {
             Log.d("Mon3tize", "AdMob App ID found: $appId")
         }
     }
-
 }

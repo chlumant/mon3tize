@@ -27,6 +27,12 @@ class FreemiumManager(private val context: Context) {
     val isFirstLaunch: Flow<Boolean> = context.dataStore.data
         .map { prefs -> prefs[FIRST_LAUNCH_KEY] != false }
 
+    suspend fun setFirstLaunch(value: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[FIRST_LAUNCH_KEY] = value
+        }
+    }
+
     suspend fun enableFreemium() {
         val now = System.currentTimeMillis()
         val weekFromNow = now + 7 * 24 * 60 * 60 * 1000L // 7 day trial
@@ -55,12 +61,6 @@ class FreemiumManager(private val context: Context) {
 
         context.dataStore.edit { prefs ->
             prefs[FREEMIUM_KEY] = false
-        }
-    }
-
-    suspend fun setFirstLaunch(value: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[FIRST_LAUNCH_KEY] = value
         }
     }
 

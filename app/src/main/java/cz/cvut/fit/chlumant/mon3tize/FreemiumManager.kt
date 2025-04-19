@@ -1,12 +1,14 @@
 package cz.cvut.fit.chlumant.mon3tize
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
@@ -32,9 +34,21 @@ class FreemiumManager(private val context: Context) {
             prefs[FIRST_LAUNCH_KEY] = value
         }
 
-//        val currentInfo = getFreemiumInfo() ?: FreemiumInfo()
-//        val updatedInfo = currentInfo.copy(isFirst = value)
-//        saveFreemiumInfo(updatedInfo)
+        if (waitForFirebaseAuth()) {
+            val currentInfo = getFreemiumInfo() ?: FreemiumInfo()
+            val updatedInfo = currentInfo.copy(isFirst = value)
+            saveFreemiumInfo(updatedInfo)
+        } else {
+            Log.w("FreemiumManager", "Firebase Auth not ready, skipping cloud save for firstLaunch")
+        }
+    }
+
+    private suspend fun waitForFirebaseAuth(timeoutMillis: Long = 5000L): Boolean {
+        val start = System.currentTimeMillis()
+        while (Firebase.auth.currentUser == null && System.currentTimeMillis() - start < timeoutMillis) {
+            delay(100)
+        }
+        return Firebase.auth.currentUser != null
     }
 
 

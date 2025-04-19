@@ -20,9 +20,7 @@ object Mon3tize {
 
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
-//        if (FirebaseApp.getApps(context).isEmpty()) {
-//            FirebaseApp.initializeApp(context)
-//        }
+
         this.freemiumManager = FreemiumManager(context.applicationContext)
         validateAdMobManifestConfig(context)
     }

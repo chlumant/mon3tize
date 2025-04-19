@@ -25,6 +25,7 @@ class Mon3tizeDemoApp : Application() {
         Mon3tize.setUp(
             configuration = Mon3tizeConfiguration(
                 enableFreemium = true,
+                adMobEnabled = true
             ),
             context = applicationContext
         )

@@ -34,13 +34,13 @@ class FreemiumManager(private val context: Context) {
             prefs[FIRST_LAUNCH_KEY] = value
         }
 
-        if (waitForFirebaseAuth()) {
-            val currentInfo = getFreemiumInfo() ?: FreemiumInfo()
-            val updatedInfo = currentInfo.copy(isFirst = value)
-            saveFreemiumInfo(updatedInfo)
-        } else {
-            Log.w("FreemiumManager", "Firebase Auth not ready, skipping cloud save for firstLaunch")
-        }
+//        if (waitForFirebaseAuth()) {
+        val currentInfo = getFreemiumInfo() ?: FreemiumInfo()
+        val updatedInfo = currentInfo.copy(isFirst = value)
+        saveFreemiumInfo(updatedInfo)
+//        } else {
+//            Log.w("FreemiumManager", "Firebase Auth not ready, skipping cloud save for firstLaunch")
+//        }
     }
 
     private suspend fun waitForFirebaseAuth(timeoutMillis: Long = 5000L): Boolean {

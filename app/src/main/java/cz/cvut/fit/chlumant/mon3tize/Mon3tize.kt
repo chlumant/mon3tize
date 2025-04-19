@@ -20,8 +20,11 @@ object Mon3tize {
 
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
-
         this.freemiumManager = FreemiumManager(context.applicationContext)
+
+        //zpracovat vstupni parametry
+        this.freemiumManager.isFreemiumEnabled
+
         validateAdMobManifestConfig(context)
     }
 

@@ -12,9 +12,11 @@ import kotlinx.coroutines.launch
 import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import cz.cvut.fit.chlumant.demoApp.ui.AppNavigation
 import cz.cvut.fit.chlumant.demoApp.ui.theme.DemoAppTheme
+import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
 
 import cz.cvut.fit.chlumant.mon3tize.*
 
@@ -31,21 +33,18 @@ class MainActivity : ComponentActivity() {
             MobileAds.initialize(this@MainActivity) { }
         }
 
-
         setContent {
             DemoAppTheme {
                 val navController = rememberNavController()
-
-                //val isFreemiumActive by Mon3tize.isFreemiumActive.collectAsState(initial = false)
-                val isFirstLaunch by Mon3tize.isFirstLaunch.collectAsState(initial = null)
+                val viewModel: FreemiumViewModel = viewModel()
+                val isFirstLaunch by viewModel.isFirstLaunch.collectAsState()
 
                 LaunchedEffect(isFirstLaunch) {
                     if (isFirstLaunch == true && Mon3tize.isFreemiumSupported) {
                         navController.navigate("freemium")
-                        Mon3tize.setFirstLaunch(false)
+                        viewModel.setFirstLaunch(false)
                     }
                 }
-
                 AppNavigation(navController)
             }
         }

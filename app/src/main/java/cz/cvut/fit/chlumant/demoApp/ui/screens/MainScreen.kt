@@ -48,7 +48,8 @@ fun RockPaperScissorsGame(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Vyber si tah", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 

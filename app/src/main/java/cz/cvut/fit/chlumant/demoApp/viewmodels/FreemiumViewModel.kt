@@ -9,10 +9,10 @@ import kotlinx.coroutines.launch
 
 class FreemiumViewModel : ViewModel() {
 
-    val isFreemiumActive = Mon3tize.isFreemiumActive
+    val isFreemiumActive = Mon3tize.freemiumManager.isFreemiumEnabled
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    val isFirstLaunch = Mon3tize.isFirstLaunch
+    val isFirstLaunch = Mon3tize.freemiumManager.isFirstLaunch
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
     fun startTrial() {
@@ -29,7 +29,7 @@ class FreemiumViewModel : ViewModel() {
 
     fun setFirstLaunch(value: Boolean) {
         viewModelScope.launch {
-            Mon3tize.setFirstLaunch(value)
+            Mon3tize.freemiumManager.setFirstLaunch(value)
         }
     }
 }

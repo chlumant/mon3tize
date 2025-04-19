@@ -31,7 +31,12 @@ class FreemiumManager(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[FIRST_LAUNCH_KEY] = value
         }
+
+//        val currentInfo = getFreemiumInfo() ?: FreemiumInfo()
+//        val updatedInfo = currentInfo.copy(isFirst = value)
+//        saveFreemiumInfo(updatedInfo)
     }
+
 
     suspend fun enableFreemium() {
         val now = System.currentTimeMillis()
@@ -41,6 +46,7 @@ class FreemiumManager(private val context: Context) {
             isActive = true,
             activatedAt = now,
             expiresAt = weekFromNow,
+            isFirst = false
         )
 
         saveFreemiumInfo(info)
@@ -56,6 +62,7 @@ class FreemiumManager(private val context: Context) {
                 isActive = false,
                 activatedAt = 0,
                 expiresAt = 0,
+                isFirst = false
             )
         )
 
@@ -90,6 +97,7 @@ class FreemiumManager(private val context: Context) {
             isActive = data["isActive"] as? Boolean == true,
             activatedAt = (data["activatedAt"] as? Number)?.toLong() ?: 0L,
             expiresAt = (data["expiresAt"] as? Number)?.toLong() ?: 0L,
+            isFirst = (data["isFirst"]) as? Boolean == true
         )
     }
 

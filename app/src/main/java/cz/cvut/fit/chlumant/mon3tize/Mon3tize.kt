@@ -20,12 +20,14 @@ object Mon3tize {
 
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
-        this.freemiumManager = FreemiumManager(context.applicationContext)
 
-        //zpracovat vstupni parametry
-        this.freemiumManager.isFreemiumEnabled
+//        freemium manager nebudu potrebovat vubec, kdyz to na zacatku bude false ne?
+        if (configuration.enableFreemium) {
+            this.freemiumManager = FreemiumManager(context = context.applicationContext)
+            FirebaseApp.initializeApp(context)
+        }
 
-        validateAdMobManifestConfig(context)
+        if (configuration.adMobEnabled) validateAdMobManifestConfig(context)
     }
 
     val isFreemiumSupported: Boolean

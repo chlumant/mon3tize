@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.1"
+credentialsPlayServicesAuth = "1.5.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -19,7 +20,9 @@ play-services-ads = "24.2.0"
 gms = "4.4.2"
 firebase-bom = "33.12.0"
 firebase-auth = "23.2.0"
-
+play-services-auth = "21.3.0"
+credentials = "1.5.0"
+google-id = "1.1.1"
 
 
 [libraries]
@@ -50,6 +53,13 @@ play-services-ads = { module = "com.google.android.gms:play-services-ads", versi
 firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-auth = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
+
+
+jetpack-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "google-id" }
+
 
 
 [plugins]

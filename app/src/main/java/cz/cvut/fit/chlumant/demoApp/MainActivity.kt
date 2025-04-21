@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 import cz.cvut.fit.chlumant.demoApp.ui.AppNavigation
+import cz.cvut.fit.chlumant.demoApp.ui.screens.SignInScreen
 import cz.cvut.fit.chlumant.demoApp.ui.theme.DemoAppTheme
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
 
@@ -40,7 +41,8 @@ class MainActivity : ComponentActivity() {
                 val isFirstLaunch by viewModel.isFirstLaunch.collectAsState()
 
                 LaunchedEffect(isFirstLaunch) {
-                    if (isFirstLaunch == true && Mon3tize.isFreemiumSupported) {
+                    Log.d("Mon3tize", "isFirstLaunch: $isFirstLaunch, isFreemiumSupported: ${Mon3tize.isFreemiumSupported}")
+                    if (isFirstLaunch && Mon3tize.isFreemiumSupported) {
                         navController.navigate("freemium")
                         viewModel.setFirstLaunch(false)
                     }

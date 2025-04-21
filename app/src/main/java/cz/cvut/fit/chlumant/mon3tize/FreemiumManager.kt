@@ -15,7 +15,7 @@ private val Context.dataStore by preferencesDataStore("mon3tize_prefs")
 
 class FreemiumManager(private val context: Context) {
 
-    private val FREEMIUM_KEY = booleanPreferencesKey("freemium_supported")
+    private val FREEMIUM_KEY = booleanPreferencesKey("freemium_active")
     private val FIRST_LAUNCH_KEY = booleanPreferencesKey("is_first_launch")
 
     private val firestore = Firebase.firestore
@@ -37,14 +37,20 @@ class FreemiumManager(private val context: Context) {
         saveFreemiumInfo(updatedInfo)
     }
 
-    suspend fun enableFreemium() {
+    suspend fun enableFreemium(onNeedSignIn: () -> Unit, onActivated: () -> Unit) {
+        val user = auth.currentUser
+        if (user == null) {
+            onNeedSignIn()
+            return
+        }
+
         val now = System.currentTimeMillis()
-        val weekFromNow = now + 7 * 24 * 60 * 60 * 1000L // 7 day trial
+        val expiresAt = now + 7 * 24 * 60 * 60 * 1000L
 
         val info = FreemiumInfo(
             isActive = true,
             activatedAt = now,
-            expiresAt = weekFromNow,
+            expiresAt = expiresAt,
             isFirst = false
         )
 
@@ -53,6 +59,8 @@ class FreemiumManager(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[FREEMIUM_KEY] = true
         }
+
+        onActivated()
     }
 
     suspend fun disableFreemium() {
@@ -87,8 +95,21 @@ class FreemiumManager(private val context: Context) {
         } == true
     }
 
+    suspend fun isTrialExpired(): Boolean {
+        val info = getFreemiumInfo() ?: return true
+        return System.currentTimeMillis() > info.expiresAt
+    }
+
+    suspend fun checkAndAutoDisableFreemium() {
+        val info = getFreemiumInfo() ?: return
+
+        if (info.isActive && System.currentTimeMillis() > info.expiresAt) {
+            disableFreemium()
+        }
+    }
+
     suspend fun getFreemiumInfo(): FreemiumInfo? {
-        val user = auth.currentUser ?: auth.signInAnonymously().await().user ?: return null
+        val user = auth.currentUser ?: return null
         val doc = firestore.collection("users").document(user.uid).get().await()
         val data = doc.get("freemium") as? Map<*, *> ?: return null
 
@@ -101,8 +122,12 @@ class FreemiumManager(private val context: Context) {
     }
 
     suspend fun saveFreemiumInfo(info: FreemiumInfo) {
-        val user = auth.currentUser ?: auth.signInAnonymously().await().user ?: return
-        val data = mapOf("freemium" to info)
-        firestore.collection("users").document(user.uid).set(data).await()
+        val user = auth.currentUser ?: return
+        firestore.collection("users").document(user.uid)
+            .update("freemium", info)
+            .addOnFailureListener {
+                firestore.collection("users").document(user.uid).set(mapOf("freemium" to info))
+            }
+            .await()
     }
 }

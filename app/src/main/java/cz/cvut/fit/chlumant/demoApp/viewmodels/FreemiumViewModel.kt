@@ -9,27 +9,38 @@ import kotlinx.coroutines.launch
 
 class FreemiumViewModel : ViewModel() {
 
-    val isFreemiumActive = Mon3tize.freemiumManager.isFreemiumEnabled
+    private val manager = Mon3tize.freemiumManager
+
+    val isFreemiumActive = manager.isFreemiumEnabled
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    val isFirstLaunch = Mon3tize.freemiumManager.isFirstLaunch
+    val isFirstLaunch = manager.isFirstLaunch
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    fun startTrial() {
+    fun startTrial(onNeedSignIn: () -> Unit, onActivated: () -> Unit) {
         viewModelScope.launch {
-            Mon3tize.freemiumManager.enableFreemium()
+            manager.enableFreemium(
+                onNeedSignIn = onNeedSignIn,
+                onActivated = onActivated
+            )
         }
     }
 
     fun disableFreemium() {
         viewModelScope.launch {
-            Mon3tize.freemiumManager.disableFreemium()
+            manager.disableFreemium()
         }
     }
 
     fun setFirstLaunch(value: Boolean) {
         viewModelScope.launch {
-            Mon3tize.freemiumManager.setFirstLaunch(value)
+            manager.setFirstLaunch(value)
+        }
+    }
+
+    fun syncFromCloud() {
+        viewModelScope.launch {
+            manager.synchronizeWithFirebase()
         }
     }
 }

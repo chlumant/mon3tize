@@ -16,5 +16,6 @@ fun AppNavigation(navController: NavHostController) {
         composable("freemiumYes") { FreemiumActiveScreen(navController) }
         composable("payment") { PaymentScreen(navController) }
         composable("signin") { SignInScreen(navController) }
+        composable("signout") { SignOutScreen(navController) }
     }
 }

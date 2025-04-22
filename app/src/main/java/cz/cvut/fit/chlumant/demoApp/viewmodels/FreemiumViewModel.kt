@@ -11,7 +11,7 @@ class FreemiumViewModel : ViewModel() {
 
     private val manager = Mon3tize.freemiumManager
 
-    val isFreemiumActive = manager.isFreemiumEnabled
+    val isFreemiumActive = manager.isFreemiumActive
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val isFirstLaunch = manager.isFirstLaunch

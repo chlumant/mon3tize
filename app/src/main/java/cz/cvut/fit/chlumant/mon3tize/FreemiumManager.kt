@@ -21,7 +21,7 @@ class FreemiumManager(private val context: Context) {
     private val firestore = Firebase.firestore
     private val auth = Firebase.auth
 
-    val isFreemiumEnabled: Flow<Boolean> = context.dataStore.data
+    val isFreemiumActive: Flow<Boolean> = context.dataStore.data
         .map { prefs -> prefs[FREEMIUM_KEY] == true }
 
     val isFirstLaunch: Flow<Boolean> = context.dataStore.data

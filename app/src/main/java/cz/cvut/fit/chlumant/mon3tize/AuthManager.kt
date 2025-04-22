@@ -1,58 +1,64 @@
-//package cz.cvut.fit.chlumant.mon3tize
-//
-//import android.content.Context
-//import android.util.Log
-//import androidx.credentials.CredentialManager
-//import androidx.credentials.GetCredentialRequest
-//import androidx.credentials.GetCredentialResponse
-//import androidx.credentials.exceptions.GetCredentialException
-//import androidx.credentials.playservices.GoogleIdTokenCredential
-//import androidx.credentials.playservices.GoogleIdTokenRequestOptions
-//import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-//import com.google.firebase.auth.FirebaseAuth
-//import com.google.firebase.auth.GoogleAuthProvider
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.withContext
-//
-//class AuthManager(private val context: Context) {
-//
-//    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-//    private val credentialManager: CredentialManager = CredentialManager.create(context)
-//
-//    suspend fun signInWithGoogle(): Result<Unit> = withContext(Dispatchers.IO) {
-//        try {
-//            // Instantiate a Google sign-in request
-//            val googleIdOption = GetGoogleIdOption.Builder()
-//                // Your server's client ID, not your Android client ID.
-//                .setServerClientId(getString(R.string.default_web_client_id))
-//                // Only show accounts previously used to sign in.
-//                .setFilterByAuthorizedAccounts(true)
-//                .build()
-//
-//// Create the Credential Manager request
-//            val request = GetCredentialRequest.Builder()
-//                .addCredentialOption(googleIdOption)
-//                .build()
-//
-//            val result: GetCredentialResponse = credentialManager.getCredential(context, request)
-//
-//            val googleCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
-//            val idToken = googleCredential.idToken
-//
-//            if (idToken.isNullOrEmpty()) {
-//                return@withContext Result.failure(IllegalStateException("ID token is null"))
-//            }
-//
-//            val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
-//            auth.signInWithCredential(firebaseCredential).await()
-//
-//            Result.success(Unit)
-//        } catch (e: GetCredentialException) {
-//            Log.e("AuthManager", "Credential error: ${e.message}", e)
-//            Result.failure(e)
-//        } catch (e: Exception) {
-//            Log.e("AuthManager", "General sign-in error: ${e.message}", e)
-//            Result.failure(e)
-//        }
-//    }
-//}
+package cz.cvut.fit.chlumant.mon3tize
+
+import android.util.Log
+import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.FirebaseUser
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+
+
+object AuthManager {
+
+    private val auth: FirebaseAuth get() = FirebaseAuth.getInstance()
+
+    fun isUserSignedIn(): Boolean {
+        return auth.currentUser != null
+    }
+
+    fun signInWithGoogleToken(idToken: String, onResult: (Boolean, String?) -> Unit) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val uid = auth.currentUser?.uid
+                    onResult(true, uid)
+                } else {
+                    Log.e("AuthManager", "Přihlášení selhalo: ${task.exception?.message}")
+                    onResult(false, null)
+                }
+            }
+    }
+
+    fun signOut() {
+        auth.signOut()
+        Log.d("AuthManager", "Uživatel byl odhlášen.")
+    }
+
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
+    }
+
+    fun getUid(): String? {
+        return auth.currentUser?.uid
+    }
+
+    fun getEmail(): String? {
+        return auth.currentUser?.email
+    }
+
+    fun isAnonymous(): Boolean {
+        return auth.currentUser?.isAnonymous == true
+    }
+
+    fun getGoogleSignInClient(context: Context, webClientId: String): GoogleSignInClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(webClientId)
+            .requestEmail()
+            .build()
+
+        return GoogleSignIn.getClient(context, gso)
+    }
+}

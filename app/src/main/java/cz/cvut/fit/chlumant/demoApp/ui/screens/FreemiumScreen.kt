@@ -11,8 +11,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
-import cz.cvut.fit.chlumant.mon3tize.Mon3tize
-import kotlinx.coroutines.launch
 
 @Composable
 fun FreemiumScreen(navController: NavHostController) {
@@ -37,10 +35,11 @@ fun FreemiumScreen(navController: NavHostController) {
 
                 Button(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     onClick = {
                         viewModel.startTrial(
-                            onNeedSignIn = { navController.navigate("sign_in") },
+                            onNeedSignIn = { navController.navigate("signin") },
                             onActivated = {
                                 navController.navigate("home") {
                                     popUpTo("freemium") { inclusive = true }
@@ -64,7 +63,9 @@ fun FreemiumScreen(navController: NavHostController) {
                 )
 
                 Button(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     onClick = {
                         viewModel.disableFreemium()
                         navController.navigate("home") {

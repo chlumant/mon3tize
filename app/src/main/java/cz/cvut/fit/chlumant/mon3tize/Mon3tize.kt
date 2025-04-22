@@ -21,7 +21,6 @@ object Mon3tize {
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
 
-//        freemium manager nebudu potrebovat vubec, kdyz to na zacatku bude false ne?
         if (configuration.enableFreemium) {
             this.freemiumManager = FreemiumManager(context = context.applicationContext)
             FirebaseApp.initializeApp(context)
@@ -38,7 +37,7 @@ object Mon3tize {
         modifier: Modifier = Modifier,
         content: @Composable () -> Unit
     ) {
-        val freemium by freemiumManager.isFreemiumEnabled.collectAsState(initial = false)
+        val freemium by freemiumManager.isFreemiumActive.collectAsState(initial = false)
         if (freemium) {
             content()
         }

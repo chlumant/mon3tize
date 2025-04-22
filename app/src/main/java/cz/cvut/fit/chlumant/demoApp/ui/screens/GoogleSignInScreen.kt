@@ -13,10 +13,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
+import cz.cvut.fit.chlumant.mon3tize.AuthManager
 
 @Composable
 fun SignInScreen(
@@ -29,11 +27,7 @@ fun SignInScreen(
     val webClientId = "68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com"
 
     val signInClient = remember {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(webClientId)
-            .requestEmail()
-            .build()
-        GoogleSignIn.getClient(context, gso)
+        AuthManager.getGoogleSignInClient(context, webClientId)
     }
 
     val launcher = rememberLauncherForActivityResult(

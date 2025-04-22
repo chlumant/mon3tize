@@ -17,42 +17,67 @@ import kotlinx.coroutines.launch
 @Composable
 fun FreemiumScreen(navController: NavHostController) {
     val viewModel: FreemiumViewModel = viewModel()
+    val isFreemiumActive by viewModel.isFreemiumActive.collectAsState()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Do you wish to activate free trial?",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
+            if (!isFreemiumActive) {
+                Text(
+                    text = "Chceš aktivovat zkušební dobu zdarma?",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                onClick = {
-                    viewModel.startTrial(
-                        onNeedSignIn = { navController.navigate("sign_in") },
-                        onActivated = {
-                            navController.navigate("home") {
-                                popUpTo("freemium") { inclusive = true }
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = {
+                        viewModel.startTrial(
+                            onNeedSignIn = { navController.navigate("sign_in") },
+                            onActivated = {
+                                navController.navigate("home") {
+                                    popUpTo("freemium") { inclusive = true }
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
+                ) {
+                    Text("Ano, aktivovat")
                 }
-            ) {
-                Text("Yes")
-            }
 
-            NavigationButton(navController, "No", "payment")
+                Spacer(modifier = Modifier.height(12.dp))
+
+                NavigationButton(navController, "Ne, pokračovat bez freemia", "payment")
+            } else {
+                Text(
+                    text = "Freemium je aktivní.",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        viewModel.disableFreemium()
+                        navController.navigate("home") {
+                            popUpTo("freemium") { inclusive = true }
+                        }
+                    }
+                ) {
+                    Text("Zrušit freemium")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                NavigationButton(navController, "Zpět na domovskou obrazovku", "home")
+            }
         }
     }
 }

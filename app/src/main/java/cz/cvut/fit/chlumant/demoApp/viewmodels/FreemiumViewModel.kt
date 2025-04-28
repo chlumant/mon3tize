@@ -3,7 +3,9 @@ package cz.cvut.fit.chlumant.demoApp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -14,27 +16,31 @@ class FreemiumViewModel : ViewModel() {
     val isFreemiumActive = manager.isFreemiumActive
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    val isFirstLaunch = manager.isFirstLaunch
-        .stateIn(viewModelScope, SharingStarted.Lazily, true)
+    private val _showTrialUsedDialog = MutableStateFlow(false)
+    val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
 
-    fun startTrial(onNeedSignIn: () -> Unit, onActivated: () -> Unit) {
+    fun startTrial(
+        onNeedSignIn: () -> Unit,
+        onActivated: () -> Unit
+    ) {
         viewModelScope.launch {
             manager.enableFreemium(
                 onNeedSignIn = onNeedSignIn,
-                onActivated = onActivated
+                onActivated = onActivated,
+                onAlreadyUsed = {
+                    _showTrialUsedDialog.value = true
+                }
             )
         }
+    }
+
+    fun dismissTrialUsedDialog() {
+        _showTrialUsedDialog.value = false
     }
 
     fun disableFreemium() {
         viewModelScope.launch {
             manager.disableFreemium()
-        }
-    }
-
-    fun setFirstLaunch(value: Boolean) {
-        viewModelScope.launch {
-            manager.setFirstLaunch(value)
         }
     }
 

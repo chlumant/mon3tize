@@ -11,11 +11,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
+import cz.cvut.fit.chlumant.mon3tize.components.Dialogs
 
 @Composable
 fun FreemiumScreen(navController: NavHostController) {
     val viewModel: FreemiumViewModel = viewModel()
+
     val isFreemiumActive by viewModel.isFreemiumActive.collectAsState()
+    val showTrialUsedDialog by viewModel.showTrialUsedDialog.collectAsState()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -80,5 +83,15 @@ fun FreemiumScreen(navController: NavHostController) {
                 NavigationButton(navController, "Zpět na domovskou obrazovku", "home")
             }
         }
+    }
+
+    if (showTrialUsedDialog) {
+        Dialogs.TrialAlreadyUsedDialog(
+            onDismiss = { viewModel.dismissTrialUsedDialog() },
+            onGoToSubscription = {
+                viewModel.dismissTrialUsedDialog()
+                navController.navigate("payment")
+            }
+        )
     }
 }

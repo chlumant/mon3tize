@@ -29,20 +29,6 @@ object Mon3tize {
         if (configuration.adMobEnabled) validateAdMobManifestConfig(context)
     }
 
-    val isFreemiumSupported: Boolean
-        get() = configuration?.enableFreemium == true
-
-    @Composable
-    fun LockedContent(
-        modifier: Modifier = Modifier,
-        content: @Composable () -> Unit
-    ) {
-        val freemium by freemiumManager.isFreemiumActive.collectAsState(initial = false)
-        if (freemium) {
-            content()
-        }
-    }
-
     private fun validateAdMobManifestConfig(context: Context) {
         val appId = try {
             val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)

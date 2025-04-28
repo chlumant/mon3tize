@@ -37,16 +37,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             DemoAppTheme {
                 val navController = rememberNavController()
-                val viewModel: FreemiumViewModel = viewModel()
-                val isFirstLaunch by viewModel.isFirstLaunch.collectAsState()
-
-                LaunchedEffect(isFirstLaunch) {
-                    Log.d("Mon3tize", "isFirstLaunch: $isFirstLaunch, isFreemiumSupported: ${Mon3tize.isFreemiumSupported}")
-                    if (isFirstLaunch && Mon3tize.isFreemiumSupported) {
-                        navController.navigate("freemium")
-                        viewModel.setFirstLaunch(false)
-                    }
-                }
                 AppNavigation(navController)
             }
         }

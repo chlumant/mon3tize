@@ -17,5 +17,6 @@ fun AppNavigation(navController: NavHostController) {
         composable("payment") { PaymentScreen(navController) }
         composable("signin") { SignInScreen(navController) }
         composable("signout") { SignOutScreen(navController) }
+        composable("resettrial") { ResetTrialScreen(navController) }
     }
 }

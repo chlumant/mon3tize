@@ -74,6 +74,7 @@ fun HomeScreen(navController: NavHostController) {
             ) {
                 Text("Go to Freemium Screen but with Ad")
             }
+            NavigationButton(navController, "Resetovat Trial", "resettrial")
         }
     }
 }

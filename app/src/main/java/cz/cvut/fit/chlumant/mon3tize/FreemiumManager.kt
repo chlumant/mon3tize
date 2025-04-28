@@ -36,6 +36,16 @@ class FreemiumManager(
         return !info.trialUsed
     }
 
+    suspend fun resetTrialUsed() {
+        val info = FreemiumInfo(
+            isActive = false,
+            activatedAt = 0,
+            expiresAt = 0,
+            trialUsed = false
+        )
+        saveFreemiumInfo(info)
+    }
+
     suspend fun enableFreemium(
         onNeedSignIn: () -> Unit,
         onActivated: () -> Unit,
@@ -94,9 +104,7 @@ class FreemiumManager(
             context.dataStore.edit { prefs ->
                 prefs[FREEMIUM_KEY] = info?.isActive == true
             }
-        } catch (_: Exception) {
-
-        }
+        } catch (_: Exception) {}
     }
 
     suspend fun isFreemiumCurrentlyActive(): Boolean {

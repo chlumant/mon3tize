@@ -127,6 +127,46 @@ import com.android.billingclient.api.*
 //        Log.d("BillingManager", "Launch billing flow result: ${billingResult.responseCode}")
 //    }
 //
+//    fun checkActiveSubscription(productId: String, onResult: (Boolean) -> Unit) {
+//        val params = QueryPurchasesParams.newBuilder()
+//            .setProductType(BillingClient.ProductType.SUBS)
+//            .build()
+//
+//        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+//            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+//                val hasActiveSubscription = purchasesList.any { purchase ->
+//                    purchase.products.contains(productId) &&
+//                            purchase.isAcknowledged &&
+//                            purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+//                }
+//                onResult(hasActiveSubscription)
+//            } else {
+//                Log.e("BillingManager", "Failed to query subscriptions: ${billingResult.debugMessage}")
+//                onResult(false)
+//            }
+//        }
+//    }
+//
+//    fun checkPurchasedProduct(productId: String, onResult: (Boolean) -> Unit) {
+//        val params = QueryPurchasesParams.newBuilder()
+//            .setProductType(BillingClient.ProductType.INAPP)
+//            .build()
+//
+//        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+//            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+//                val hasProduct = purchasesList.any { purchase ->
+//                    purchase.products.contains(productId) &&
+//                            purchase.isAcknowledged &&
+//                            purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+//                }
+//                onResult(hasProduct)
+//            } else {
+//                Log.e("BillingManager", "Failed to query one-time purchases: ${billingResult.debugMessage}")
+//                onResult(false)
+//            }
+//        }
+//    }
+//
 //    fun endConnection() {
 //        billingClient.endConnection()
 //    }

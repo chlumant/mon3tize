@@ -10,9 +10,11 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+//import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
 
 private val Context.dataStore by preferencesDataStore("mon3tize_prefs")
 
+//TODO: PRIDAT KONTROLU VYPRSENI FREE TRIALU
 class FreemiumManager(private val context: Context) {
 
     private val FREEMIUM_KEY = booleanPreferencesKey("freemium_active")
@@ -90,10 +92,39 @@ class FreemiumManager(private val context: Context) {
     }
 
     suspend fun isFreemiumCurrentlyActive(): Boolean {
-        return getFreemiumInfo()?.let {
-            it.isActive && System.currentTimeMillis() <= it.expiresAt
-        } == true
+        val info = getFreemiumInfo() ?: return false
+        val now = System.currentTimeMillis()
+
+        if (info.isActive && now > info.expiresAt) {
+            saveFreemiumInfo(
+                FreemiumInfo(
+                    isActive = false,
+                    activatedAt = info.activatedAt,
+                    expiresAt = info.expiresAt,
+                    isFirst = false
+                )
+            )
+            return false
+        }
+        return info.isActive
     }
+
+//    suspend fun isPremiumAccessAvailable(billingManager: BillingManager, subscriptionProductId: String, oneTimeProductId: String): Boolean {
+//        val hasActiveTrial = isFreemiumCurrentlyActive()
+//        var hasActiveSubscription = false
+//
+//
+//        val subscriptionCheck = kotlinx.coroutines.suspendCancellableCoroutine<Boolean> { continuation ->
+//            billingManager.checkActiveSubscription(subscriptionProductId) { isActive ->
+//                continuation.resume(isActive) {}
+//            }
+//        }
+//
+//        hasActiveSubscription = subscriptionCheck
+//
+//        return hasActiveTrial || hasActiveSubscription
+//    }
+
 
     suspend fun isTrialExpired(): Boolean {
         val info = getFreemiumInfo() ?: return true

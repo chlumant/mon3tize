@@ -12,7 +12,20 @@
           "package_name": "cz.cvut.fit.chlumant.demoApp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "68214838435-vuohbmd65m62n0l74260bkg0gqo6dcdp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cz.cvut.fit.chlumant.demoApp",
+            "certificate_hash": "88cf4d4e2cd13aec376568aed58d37b945735de9"
+          }
+        },
+        {
+          "client_id": "68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAAc4GUfWkoYihJc3a_PnnE21bY2phDs20"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

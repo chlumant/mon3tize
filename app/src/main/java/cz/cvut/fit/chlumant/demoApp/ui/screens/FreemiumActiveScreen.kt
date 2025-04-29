@@ -1,5 +1,6 @@
 package cz.cvut.fit.chlumant.demoApp.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,8 @@ fun FreemiumActiveScreen(navController: NavHostController) {
                     .padding(16.dp)
             )
             NavigationButton(navController, "Continue to App", "home")
+
+            NavigationButton(navController, "prihlasit", "signin")
         }
     }
 }

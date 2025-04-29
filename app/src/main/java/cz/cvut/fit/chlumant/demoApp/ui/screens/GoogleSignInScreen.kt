@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 import cz.cvut.fit.chlumant.mon3tize.AuthManager
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 
 @Composable
 fun SignInScreen(
@@ -23,8 +24,7 @@ fun SignInScreen(
 ) {
     val context = LocalContext.current
 
-    //Web Client ID (z Google Cloud Console > OAuth Web client)
-    val webClientId = "68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com"
+    val webClientId = UserKeys.OAUTH_CLIENT_ID
 
     val signInClient = remember {
         AuthManager.getGoogleSignInClient(context, webClientId)

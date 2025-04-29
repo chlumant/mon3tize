@@ -13,50 +13,39 @@ import androidx.compose.ui.unit.dp
 
 object Dialogs {
     @Composable
-    fun Freemium(modifier: Modifier = Modifier) {
+    fun TrialAlreadyUsedDialog(
+        onDismiss: () -> Unit,
+        onGoToSubscription: () -> Unit
+    ) {
         AlertDialog(
-            onDismissRequest = {},
-            title = { Text("Freemium Access") },
+            onDismissRequest = onDismiss,
+            title = {
+                Text(text = "Zkušební doba již byla vyčerpána")
+            },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Do you want to activate free trial?")
-                }
+                Text(text = "Již jste využili svou bezplatnou zkušební dobu." +
+                        " Zakoupením předplatného získáte plný přístup.")
             },
             confirmButton = {
-                Button(onClick = { /* implement activate */ }) {
-                    Text("Activate")
+                Button(
+                    onClick = onGoToSubscription,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    Text("Zakoupit předplatné")
                 }
             },
             dismissButton = {
-                Button(onClick = { /* implement dismiss */ }) {
-                    Text("Cancel")
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    Text("Zrušit")
                 }
-            },
-            modifier = modifier.fillMaxWidth().padding(16.dp)
-        )
-    }
-
-    @Composable
-    fun Payment(modifier: Modifier = Modifier) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = { Text("Payment Required") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Please subscribe or watch an ad to continue.")
-                }
-            },
-            confirmButton = {
-                Button(onClick = { /* implement payment */ }) {
-                    Text("Subscribe")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { /* implement dismiss */ }) {
-                    Text("Cancel")
-                }
-            },
-            modifier = modifier.fillMaxWidth().padding(16.dp)
+            }
         )
     }
 }

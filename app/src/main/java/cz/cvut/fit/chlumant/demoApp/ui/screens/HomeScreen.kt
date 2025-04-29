@@ -1,6 +1,7 @@
 package cz.cvut.fit.chlumant.demoApp.ui.screens
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +18,11 @@ import androidx.navigation.NavHostController
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+
 import cz.cvut.fit.chlumant.demoApp.ui.components.*
+import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 
 import cz.cvut.fit.chlumant.mon3tize.adManagers.InterstitialAdManager
 import cz.cvut.fit.chlumant.mon3tize.components.AdBanner
@@ -26,6 +31,18 @@ import cz.cvut.fit.chlumant.mon3tize.components.AdBanner
 fun HomeScreen(navController: NavHostController) {
     val context = LocalContext.current
     val interstitialAdManager = remember { InterstitialAdManager(context as Activity, UserKeys.AdMob.INTERSTITIAL_DEMO) }
+
+    val manager = Mon3tize.freemiumManager
+
+    LaunchedEffect(Unit) {
+        val user = Firebase.auth.currentUser
+        val isFreemium = manager.isFreemiumCurrentlyActive()
+        Log.d(
+            "AUTH",
+            "Uživatel: ${user?.email ?: "anonymní"} | Freemium aktivní: $isFreemium"
+        )
+    }
+
 
     LaunchedEffect(Unit) {
         interstitialAdManager.loadAd()
@@ -43,9 +60,9 @@ fun HomeScreen(navController: NavHostController) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-            NavigationButton(navController, "Go to Detail Screen", "detail")
             NavigationButton(navController, "Go to Freemium Screen", "freemium")
             NavigationButton(navController, "Go to Main Screen", "main")
+            NavigationButton(navController, "Sign Out", "signout")
             Button(
                 onClick = {
                     interstitialAdManager.showAd {
@@ -56,6 +73,7 @@ fun HomeScreen(navController: NavHostController) {
             ) {
                 Text("Go to Freemium Screen but with Ad")
             }
+            NavigationButton(navController, "Resetovat Trial", "resettrial")
         }
     }
 }

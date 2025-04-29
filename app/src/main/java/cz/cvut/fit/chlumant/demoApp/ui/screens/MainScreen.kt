@@ -8,14 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-
-
 import kotlin.random.Random
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
 
 
 @Composable
@@ -25,6 +25,9 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun RockPaperScissorsGame(navController: NavHostController) {
+    val viewModel: FreemiumViewModel = viewModel()
+    val isPremium by viewModel.isFreemiumActive.collectAsState()
+
     var playerChoice by remember { mutableStateOf<String?>(null) }
     var computerChoice by remember { mutableStateOf<String?>(null) }
     var result by remember { mutableStateOf<String?>(null) }
@@ -48,7 +51,8 @@ fun RockPaperScissorsGame(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Vyber si tah", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
@@ -59,15 +63,30 @@ fun RockPaperScissorsGame(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             choices.forEach { choice ->
+                val isEnabled = choice != "Papír" || isPremium
+
                 Button(
                     onClick = { playGame(choice) },
+                    enabled = isEnabled,
                     modifier = Modifier
                         .weight(1f)
                         .padding(8.dp)
                 ) {
-                    Text(text = choice, fontSize = 16.sp)
+                    Text(
+                        text = if (!isEnabled) "$choice 🔒" else choice,
+                        fontSize = 16.sp
+                    )
                 }
             }
+        }
+
+        if (!isPremium) {
+            Text(
+                text = "Pro výběr 'Papír' je potřeba aktivovat zkušební dobu nebo mít prémiový účet.",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -80,9 +99,15 @@ fun RockPaperScissorsGame(navController: NavHostController) {
                 text = result ?: "",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (result == "Vyhrál jsi!") Color.Green else if (result == "Prohrál jsi!") Color.Red else Color.Gray
+                color = when (result) {
+                    "Vyhrál jsi!" -> Color.Green
+                    "Prohrál jsi!" -> Color.Red
+                    else -> Color.Gray
+                }
             )
         }
-        NavigationButton(navController, "Zpatky na domovskou obrazovku", "home")
+
+        Spacer(modifier = Modifier.height(24.dp))
+        NavigationButton(navController, "Zpět na domovskou obrazovku", "home")
     }
 }

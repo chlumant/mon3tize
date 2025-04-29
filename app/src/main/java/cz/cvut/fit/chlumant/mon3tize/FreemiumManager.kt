@@ -13,7 +13,9 @@ import kotlinx.coroutines.tasks.await
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
-//import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
+import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 private val Context.dataStore by preferencesDataStore("mon3tize_prefs")
 
@@ -125,22 +127,11 @@ class FreemiumManager(
         return info.isActive
     }
 
-
-//    suspend fun isPremiumAccessAvailable(billingManager: BillingManager, subscriptionProductId: String, oneTimeProductId: String): Boolean {
-//        val hasActiveTrial = isFreemiumCurrentlyActive()
-//        var hasActiveSubscription = false
-//
-//
-//        val subscriptionCheck = kotlinx.coroutines.suspendCancellableCoroutine<Boolean> { continuation ->
-//            billingManager.checkActiveSubscription(subscriptionProductId) { isActive ->
-//                continuation.resume(isActive) {}
-//            }
-//        }
-//
-//        hasActiveSubscription = subscriptionCheck
-//
-//        return hasActiveTrial || hasActiveSubscription
-//    }
+    suspend fun isPremiumAccessAvailable(billingManager: BillingManager, subscriptionProductId: String): Boolean {
+        val hasActiveTrial = isFreemiumCurrentlyActive()
+        val hasActiveSubscription = billingManager.isSubscriptionActive(subscriptionProductId)
+        return hasActiveTrial || hasActiveSubscription
+    }
 
     suspend fun getFreemiumInfo(): FreemiumInfo? {
         val user = auth.currentUser ?: return null

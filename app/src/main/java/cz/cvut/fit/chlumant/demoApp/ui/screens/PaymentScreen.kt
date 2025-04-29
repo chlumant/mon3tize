@@ -12,14 +12,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import android.app.Activity
 import android.util.Log
-import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import cz.cvut.fit.chlumant.mon3tize.adManagers.RewardedAdManager
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
-//import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
+import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
 import com.android.billingclient.api.*
 
 @Composable
@@ -31,41 +29,41 @@ fun PaymentScreen(navController: NavHostController) {
         RewardedAdManager(activity, UserKeys.AdMob.REWARDED_DEMO)
     }
 
-//    val billingManager = remember {
-//        BillingManager(context, PurchasesUpdatedListener { billingResult, purchases ->
-//            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-//                Log.d("Billing", "Subscription purchase successful: ${purchases.first().products}")
-//                // TODO: Aktivuj freemium např. Mon3tize.enableFreemium()
-//            } else {
-//                Log.w("Billing", "Subscription failed: ${billingResult.debugMessage}")
-//            }
-//        })
-//    }
+    val billingManager = remember {
+        BillingManager(context, PurchasesUpdatedListener { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+                Log.d("Billing", "Subscription purchase successful: ${purchases.first().products}")
+                // TODO: Aktivuj freemium např. Mon3tize.enableFreemium()
+            } else {
+                Log.w("Billing", "Subscription failed: ${billingResult.debugMessage}")
+            }
+        })
+    }
 
-//    var subscriptionProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
-//    var oneTimeProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
+    var subscriptionProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
+    var oneTimeProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
 
-//    LaunchedEffect(Unit) {
-//        try {
-//            rewardedAdManager.loadAd()
-//            billingManager.startConnection {
-//                billingManager.querySubscriptions("subscription_test_01") { details ->
-//                    if (details != null) {
-//                        Log.d("PaymentScreen", "Subscription loaded: ${details.name}")
-//                        subscriptionProductDetails = details
-//                    } else {
-//                        Log.e("PaymentScreen", "Subscription productDetails was null")
-//                    }
-//                }
-//
-//                billingManager.queryOneTimeProduct("remove_ads_test_01") {
-//                    oneTimeProductDetails = it
-//                }
-//            }
-//        } catch (e: Exception) {
-//            Log.e("PaymentScreen", "Exception during billing setup: ${e.localizedMessage}", e)
-//        }
-//    }
+    LaunchedEffect(Unit) {
+        try {
+            rewardedAdManager.loadAd()
+            billingManager.startConnection {
+                billingManager.querySubscriptions("subscription_test_01") { details ->
+                    if (details != null) {
+                        Log.d("PaymentScreen", "Subscription loaded: ${details.name}")
+                        subscriptionProductDetails = details
+                    } else {
+                        Log.e("PaymentScreen", "Subscription productDetails was null")
+                    }
+                }
+
+                billingManager.queryOneTimeProduct("remove_ads_test_01") {
+                    oneTimeProductDetails = it
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("PaymentScreen", "Exception during billing setup: ${e.localizedMessage}", e)
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -94,29 +92,29 @@ fun PaymentScreen(navController: NavHostController) {
                 Text("Watch Ad to Earn Reward")
             }
 
-//            Button(
-//                onClick = {
-//                    subscriptionProductDetails?.let {
-//                        billingManager.launchSubscriptionPurchaseFlow(activity, it)
-//                    } ?: run {
-//                        Log.e("PaymentScreen", "Subscription productDetails not loaded")
-//                    }
-//                },
-//                modifier = Modifier.fillMaxWidth().padding(16.dp)
-//            ) {
-//                Text("Buy Subscription")
-//            }
+            Button(
+                onClick = {
+                    subscriptionProductDetails?.let {
+                        billingManager.launchSubscriptionPurchaseFlow(activity, it)
+                    } ?: run {
+                        Log.e("PaymentScreen", "Subscription productDetails not loaded")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Text("Buy Subscription")
+            }
 
-//            Button(
-//                onClick = {
-//                    oneTimeProductDetails?.let {
-//                        billingManager.launchInAppPurchaseFlow(activity, it)
-//                    } ?: Log.e("PaymentScreen", "One-time product not loaded")
-//                },
-//                modifier = Modifier.fillMaxWidth().padding(16.dp)
-//            ) {
-//                Text("Jednorázový nákup")
-//            }
+            Button(
+                onClick = {
+                    oneTimeProductDetails?.let {
+                        billingManager.launchInAppPurchaseFlow(activity, it)
+                    } ?: Log.e("PaymentScreen", "One-time product not loaded")
+                },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Text("Jednorázový nákup")
+            }
 
             NavigationButton(navController, "Zpět na Home", "home")
         }

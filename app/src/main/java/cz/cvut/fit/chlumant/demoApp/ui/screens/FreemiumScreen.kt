@@ -56,7 +56,7 @@ fun FreemiumScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                NavigationButton(navController, "Ne, pokračovat bez freemia", "payment")
+                NavigationButton(navController, "Ne, pokračovat bez freemia", "home")
             } else {
                 Text(
                     text = "Freemium je aktivní.",

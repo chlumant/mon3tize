@@ -60,7 +60,6 @@ fun HomeScreen(navController: NavHostController) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-            NavigationButton(navController, "Go to Detail Screen", "detail")
             NavigationButton(navController, "Go to Freemium Screen", "freemium")
             NavigationButton(navController, "Go to Main Screen", "main")
             NavigationButton(navController, "Sign Out", "signout")

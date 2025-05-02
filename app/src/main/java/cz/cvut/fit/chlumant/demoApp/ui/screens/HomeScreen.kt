@@ -60,9 +60,8 @@ fun HomeScreen(navController: NavHostController) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-            NavigationButton(navController, "Go to Freemium Screen", "freemium")
             NavigationButton(navController, "Go to Main Screen", "main")
-            NavigationButton(navController, "Sign Out", "signout")
+            NavigationButton(navController, "Go to Freemium Screen", "freemium")
             Button(
                 onClick = {
                     interstitialAdManager.showAd {
@@ -73,7 +72,8 @@ fun HomeScreen(navController: NavHostController) {
             ) {
                 Text("Go to Freemium Screen but with Ad")
             }
-            NavigationButton(navController, "Resetovat Trial", "resettrial")
+            NavigationButton(navController, "Resetovat Zkušební Dobu", "resettrial")
+            NavigationButton(navController, "Nastavení Předplatného", "subscriptionsettings")
         }
     }
 }

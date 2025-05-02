@@ -4,11 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import com.google.firebase.FirebaseApp
+import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
+import cz.cvut.fit.chlumant.mon3tize.billing.PurchaseListener
+import cz.cvut.fit.chlumant.mon3tize.util.AppContextHolder
 
 object Mon3tize {
 
@@ -18,8 +17,21 @@ object Mon3tize {
     lateinit var freemiumManager: FreemiumManager
         private set
 
+    @SuppressLint("StaticFieldLeak")
+    lateinit var billingManager: BillingManager
+        private set
+
+//  pridat neco pokud nebudu chtit mit nakupy v aplikaci?
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
+        AppContextHolder.init(context)
+
+        this.billingManager = BillingManager(
+            context = context.applicationContext,
+            listener = PurchaseListener
+        )
+
+        billingManager.startConnection {}
 
         if (configuration.enableFreemium) {
             this.freemiumManager = FreemiumManager(context = context.applicationContext)

@@ -13,56 +13,32 @@ import androidx.navigation.NavHostController
 import android.app.Activity
 import android.util.Log
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cz.cvut.fit.chlumant.mon3tize.adManagers.RewardedAdManager
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
-import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
 import com.android.billingclient.api.*
+import cz.cvut.fit.chlumant.demoApp.viewmodels.PaymentViewModel
 
 @Composable
 fun PaymentScreen(navController: NavHostController) {
     val context = LocalContext.current
     val activity = context as Activity
 
+    val viewModel: PaymentViewModel = viewModel()
+
+    val isBillingReady by viewModel.isBillingReady.collectAsState()
+    val subscriptionProductDetails by viewModel.subscriptionProductDetails.collectAsState()
+    val oneTimeProductDetails by viewModel.oneTimeProductDetails.collectAsState()
+
     val rewardedAdManager = remember {
         RewardedAdManager(activity, UserKeys.AdMob.REWARDED_DEMO)
     }
 
-    val billingManager = remember {
-        BillingManager(context, PurchasesUpdatedListener { billingResult, purchases ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-                Log.d("Billing", "Subscription purchase successful: ${purchases.first().products}")
-                // TODO: Aktivuj freemium např. Mon3tize.enableFreemium()
-            } else {
-                Log.w("Billing", "Subscription failed: ${billingResult.debugMessage}")
-            }
-        })
-    }
-
-    var subscriptionProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
-    var oneTimeProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
-
     LaunchedEffect(Unit) {
-        try {
-            rewardedAdManager.loadAd()
-            billingManager.startConnection {
-                billingManager.querySubscriptions("subscription_test_01") { details ->
-                    if (details != null) {
-                        Log.d("PaymentScreen", "Subscription loaded: ${details.name}")
-                        subscriptionProductDetails = details
-                    } else {
-                        Log.e("PaymentScreen", "Subscription productDetails was null")
-                    }
-                }
-
-                billingManager.queryOneTimeProduct("remove_ads_test_01") {
-                    oneTimeProductDetails = it
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("PaymentScreen", "Exception during billing setup: ${e.localizedMessage}", e)
-        }
+        rewardedAdManager.loadAd()
     }
 
     Scaffold(
@@ -75,10 +51,11 @@ fun PaymentScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Zaplat, zmrde, test",
+                text = "Vyberte, co chcete zakoupit",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .align(Alignment.CenterHorizontally)
             )
 
             Button(
@@ -87,33 +64,35 @@ fun PaymentScreen(navController: NavHostController) {
                         Log.d("PaymentScreen", "User earned the reward!")
                     }
                 },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
                 Text("Watch Ad to Earn Reward")
             }
 
-            Button(
-                onClick = {
-                    subscriptionProductDetails?.let {
-                        billingManager.launchSubscriptionPurchaseFlow(activity, it)
-                    } ?: run {
-                        Log.e("PaymentScreen", "Subscription productDetails not loaded")
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
-            ) {
-                Text("Buy Subscription")
-            }
+            if (isBillingReady) {
+                Button(
+                    onClick = { viewModel.buySubscription(activity) },
+                    enabled = subscriptionProductDetails != null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("Koupit Předplatné")
+                }
 
-            Button(
-                onClick = {
-                    oneTimeProductDetails?.let {
-                        billingManager.launchInAppPurchaseFlow(activity, it)
-                    } ?: Log.e("PaymentScreen", "One-time product not loaded")
-                },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
-            ) {
-                Text("Jednorázový nákup")
+                Button(
+                    onClick = { viewModel.buyOneTimeProduct(activity) },
+                    enabled = oneTimeProductDetails != null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("Jednorázový nákup")
+                }
+            } else {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
 
             NavigationButton(navController, "Zpět na Home", "home")

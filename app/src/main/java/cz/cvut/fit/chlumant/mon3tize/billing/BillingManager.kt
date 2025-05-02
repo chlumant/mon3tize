@@ -2,15 +2,22 @@ package cz.cvut.fit.chlumant.mon3tize.billing
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import com.android.billingclient.api.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import androidx.core.net.toUri
 
 class BillingManager(
     private val context: Context,
     private val listener: PurchasesUpdatedListener
 ) {
+
+    private val _isBillingReady = MutableStateFlow(false)
+    val isBillingReady: StateFlow<Boolean> = _isBillingReady
 
     init {
         Log.d("BillingManager", "BillingClient built, version 7.1.1")
@@ -22,19 +29,22 @@ class BillingManager(
         .enablePendingPurchases()
         .build()
 
-    fun startConnection(onReady: () -> Unit) {
+    fun startConnection(onReady: () -> Unit = {}) {
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     Log.d("BillingManager", "BillingClient is ready")
+                    _isBillingReady.value = true
                     onReady()
                 } else {
                     Log.e("BillingManager", "Error setting up billing: ${billingResult.debugMessage}")
+                    _isBillingReady.value = false
                 }
             }
 
             override fun onBillingServiceDisconnected() {
                 Log.w("BillingManager", "Billing service disconnected")
+                _isBillingReady.value = false
             }
         })
     }
@@ -169,6 +179,16 @@ class BillingManager(
         }
     }
 
+    fun openSubscriptionManagement(context: Context, productId: String) {
+        val uri =
+            "https://play.google.com/store/account/subscriptions?sku=$productId&package=${context.packageName}"
+                .toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.setPackage("com.android.vending")
+        context.startActivity(intent)
+    }
+
+
     suspend fun isSubscriptionActive(productId: String): Boolean {
         return suspendCoroutine { continuation ->
             checkActiveSubscription(productId) { isActive ->
@@ -184,6 +204,56 @@ class BillingManager(
             }
         }
     }
+
+//  dolu debug
+    fun logActiveSubscriptions() {
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+
+        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                if (purchasesList.isEmpty()) {
+                    Log.d("BillingDebug", "Žádná aktivní předplatná nenalezena.")
+                } else {
+                    purchasesList.forEach { purchase ->
+                        Log.d("BillingDebug", "Aktivní předplatné: ${purchase.products}, acknowledged: ${purchase.isAcknowledged}")
+                    }
+                }
+            } else {
+                Log.e("BillingDebug", "Chyba při načítání předplatných: ${billingResult.debugMessage}")
+            }
+        }
+    }
+
+    fun logAllActiveSubscriptions() {
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+
+        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                if (purchasesList.isEmpty()) {
+                    Log.d("BillingDebug", "Žádné předplatné nebylo nalezeno.")
+                } else {
+                    purchasesList.forEach { purchase ->
+                        val productIdList = purchase.products.joinToString()
+                        val state = when (purchase.purchaseState) {
+                            Purchase.PurchaseState.PURCHASED -> "PURCHASED"
+                            Purchase.PurchaseState.PENDING -> "PENDING"
+                            else -> "UNSPECIFIED"
+                        }
+                        val ack = if (purchase.isAcknowledged) "YES" else "NO"
+                        Log.d("BillingDebug", "Produkt: [$productIdList], Stav: $state, Acknowledged: $ack")
+                    }
+                }
+            } else {
+                Log.e("BillingDebug", "Chyba při dotazu na předplatné: ${billingResult.debugMessage}")
+            }
+        }
+    }
+
+
 
     fun endConnection() {
         billingClient.endConnection()

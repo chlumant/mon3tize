@@ -2,6 +2,8 @@ package cz.cvut.fit.chlumant.demoApp.ui.screens
 
 import android.app.Activity
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,28 +13,34 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-
+import com.google.android.gms.ads.AdSize
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-
-import cz.cvut.fit.chlumant.demoApp.ui.components.*
+import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
-
-import cz.cvut.fit.chlumant.mon3tize.adManagers.InterstitialAdManager
 import cz.cvut.fit.chlumant.mon3tize.components.AdBanner
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-    val context = LocalContext.current
-    val interstitialAdManager = remember { InterstitialAdManager(context as Activity, UserKeys.AdMob.INTERSTITIAL_DEMO) }
 
     val manager = Mon3tize.freemiumManager
+    val activity = LocalActivity.current
+
+    LaunchedEffect(Unit) {
+        Mon3tize.preloadInterstitialAd(
+            UserKeys.AdMob.INTERSTITIAL_DEMO,
+            onError = {
+                showToast(activity, "Error while preloading add")
+            }
+        )
+    }
 
     LaunchedEffect(Unit) {
         val user = Firebase.auth.currentUser
@@ -43,15 +51,10 @@ fun HomeScreen(navController: NavHostController) {
         )
     }
 
-
-    LaunchedEffect(Unit) {
-        interstitialAdManager.loadAd()
-    }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            AdBanner(UserKeys.AdMob.BANNER_DEMO)
+            AdBanner(adUnitId = UserKeys.AdMob.BANNER_DEMO, adSize = AdSize.FULL_BANNER)
         }
     ) { innerPadding ->
         Column(
@@ -62,13 +65,26 @@ fun HomeScreen(navController: NavHostController) {
         ) {
             NavigationButton(navController, "Go to Main Screen", "main")
             NavigationButton(navController, "Go to Freemium Screen", "freemium")
+
+            val coroutineScope = rememberCoroutineScope()
             Button(
                 onClick = {
-                    interstitialAdManager.showAd {
-                        navController.navigate("freemium")
+                    activity?.let { activity ->
+                        coroutineScope.launch {
+                            Mon3tize.ads.showInterstitial(
+                                activity = activity,
+                                adUnitId = UserKeys.AdMob.INTERSTITIAL_DEMO,
+                                onClose = { navController.navigate("freemium") },
+                                onError = {
+                                    showToast(activity, "Error while showing ad")
+                                }
+                            )
+                        }
                     }
                 },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
                 Text("Go to Freemium Screen but with Ad")
             }
@@ -76,5 +92,13 @@ fun HomeScreen(navController: NavHostController) {
             NavigationButton(navController, "Nastavení Předplatného", "subscriptionsettings")
         }
     }
+}
+
+private fun showToast(activity: Activity?, message: String) {
+    Toast.makeText(
+        activity,
+        message,
+        Toast.LENGTH_SHORT
+    ).show()
 }
 

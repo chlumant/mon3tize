@@ -1,53 +1,56 @@
 package cz.cvut.fit.chlumant.demoApp.viewmodels
 
-import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class PaymentViewModel : ViewModel() {
 
-    private val billingManager = Mon3tize.billingManager
 
-    val isBillingReady = billingManager.isBillingReady
-
-    private val _subscriptionProductDetails = MutableStateFlow<ProductDetails?>(null)
-    val subscriptionProductDetails: StateFlow<ProductDetails?> = _subscriptionProductDetails
-
-    private val _oneTimeProductDetails = MutableStateFlow<ProductDetails?>(null)
-    val oneTimeProductDetails: StateFlow<ProductDetails?> = _oneTimeProductDetails
+    private val _screenStateStream = MutableStateFlow<ScreenState>(ScreenState.Loading)
+    val screenStateStream = _screenStateStream.asStateFlow()
 
     init {
         viewModelScope.launch {
-            billingManager.startConnection {
-                loadProducts()
+            loadProducts()
+        }
+    }
+
+    private suspend fun loadProducts() {
+        try {
+            _screenStateStream.value = ScreenState.Loading
+            coroutineScope {
+                val subscriptionProductDetail = async {
+                    Mon3tize.billing.getSubscriptionDetails("subscription_test_01")
+                }
+                val oneTimeProductDetail = async {
+                    Mon3tize.billing.getOneTimeProductDetails("remove_ads_test_01")
+                }
+                _screenStateStream.value = ScreenState.Loaded(
+                    subscription = subscriptionProductDetail.await(),
+                    oneTimeProduct = oneTimeProductDetail.await(),
+                )
             }
+        } catch (e: Throwable) {
+            _screenStateStream.value = ScreenState.Error(e)
         }
     }
 
-    private fun loadProducts() {
-        billingManager.querySubscriptions("subscription_test_01") { details ->
-            _subscriptionProductDetails.value = details
-        }
+    sealed interface ScreenState {
 
-        billingManager.queryOneTimeProduct("remove_ads_test_01") { details ->
-            _oneTimeProductDetails.value = details
-        }
-    }
+        data object Loading : ScreenState
 
-    fun buySubscription(activity: Activity) {
-        subscriptionProductDetails.value?.let {
-            billingManager.launchSubscriptionPurchaseFlow(activity, it)
-        }
-    }
+        data class Error(val error: Throwable) : ScreenState
 
-    fun buyOneTimeProduct(activity: Activity) {
-        oneTimeProductDetails.value?.let {
-            billingManager.launchInAppPurchaseFlow(activity, it)
-        }
+        data class Loaded(
+            val subscription: ProductDetails,
+            val oneTimeProduct: ProductDetails,
+        ) : ScreenState
     }
 }

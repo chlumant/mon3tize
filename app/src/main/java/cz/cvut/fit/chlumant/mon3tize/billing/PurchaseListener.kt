@@ -5,7 +5,6 @@ import com.android.billingclient.api.*
 import cz.cvut.fit.chlumant.mon3tize.util.AppContextHolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 object PurchaseListener : PurchasesUpdatedListener {
 

@@ -4,12 +4,18 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
@@ -142,6 +148,37 @@ class FreemiumManager(
             trialUsed = (data["trialUsed"]) as? Boolean == true
         )
     }
+
+//    fun checkPremiumAccessWithTrialControl(
+//        subscriptionProductId: String,
+//        onAccessGranted: () -> Unit,
+//        onTrialExpired: () -> Unit,
+//        onNotSignedIn: () -> Unit = {},
+//    ) {
+//        val user = FirebaseAuth.getInstance().currentUser
+//        if (user == null) {
+//            onNotSignedIn()
+//            return
+//        }
+//
+//        CoroutineScope(Dispatchers.Main).launch {
+//            val hasTrial = isFreemiumCurrentlyActive()
+//            val trialUsed = getFreemiumInfo()?.trialUsed == true
+//
+//            val hasSubscription = suspendCoroutine<Boolean> { continuation ->
+//                Mon3tize.billingManager.checkActiveSubscription(subscriptionProductId) {
+//                    continuation.resume(it)
+//                }
+//            }
+//
+//            when {
+//                hasTrial || hasSubscription -> onAccessGranted()
+//                trialUsed -> onTrialExpired()
+//                else -> onNotSignedIn()
+//            }
+//        }
+//    }
+
 
     suspend fun saveFreemiumInfo(info: FreemiumInfo) {
         val user = auth.currentUser ?: return

@@ -34,6 +34,16 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
+//  TODO: tahle hardcoded vec se mi moc nelibi
+    fun checkPremiumAccess(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val result = Mon3tize.freemiumManager.isPremiumAccessAvailable(
+                subscriptionProductId = "subscription_test_01"
+            )
+            onResult(result)
+        }
+    }
+
     fun dismissTrialUsedDialog() {
         _showTrialUsedDialog.value = false
     }

@@ -18,6 +18,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
 
 
+import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+
+
 @Composable
 fun MainScreen(navController: NavHostController) {
     RockPaperScissorsGame(navController)
@@ -26,7 +29,21 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun RockPaperScissorsGame(navController: NavHostController) {
     val viewModel: FreemiumViewModel = viewModel()
-    val isPremium by viewModel.isFreemiumActive.collectAsState()
+    var hasPremiumAccess by remember { mutableStateOf(false) }
+
+    // Načteme, zda má uživatel prémiový přístup
+    LaunchedEffect(Unit) {
+        viewModel.checkPremiumAccess { result ->
+            hasPremiumAccess = result
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        Mon3tize.billingManager.logActiveSubscriptions()
+        Mon3tize.billingManager.logAllActiveSubscriptions()
+    }
+
+
 
     var playerChoice by remember { mutableStateOf<String?>(null) }
     var computerChoice by remember { mutableStateOf<String?>(null) }
@@ -63,7 +80,7 @@ fun RockPaperScissorsGame(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             choices.forEach { choice ->
-                val isEnabled = choice != "Papír" || isPremium
+                val isEnabled = choice != "Papír" || hasPremiumAccess
 
                 Button(
                     onClick = { playGame(choice) },
@@ -80,7 +97,7 @@ fun RockPaperScissorsGame(navController: NavHostController) {
             }
         }
 
-        if (!isPremium) {
+        if (!hasPremiumAccess) {
             Text(
                 text = "Pro výběr 'Papír' je potřeba aktivovat zkušební dobu nebo mít prémiový účet.",
                 fontSize = 14.sp,

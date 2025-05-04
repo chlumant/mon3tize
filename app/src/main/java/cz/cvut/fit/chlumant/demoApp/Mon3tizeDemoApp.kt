@@ -1,7 +1,6 @@
 package cz.cvut.fit.chlumant.demoApp
 
 import android.app.Application
-import android.util.Log
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import cz.cvut.fit.chlumant.mon3tize.Mon3tizeConfiguration
 import kotlinx.coroutines.CoroutineScope
@@ -16,14 +15,12 @@ class Mon3tizeDemoApp : Application() {
 
         Mon3tize.setUp(
             configuration = Mon3tizeConfiguration(
-                enableFreemium = true,
-                adMobEnabled = true,
-                freemiumDuration = 7.days
+                freemium = Mon3tizeConfiguration.Freemium.Enabled(10.days),
             ),
             context = applicationContext
         )
         CoroutineScope(Dispatchers.IO).launch {
-            Mon3tize.freemiumManager.synchronizeWithFirebase()
+            Mon3tize.freemium.synchronizeWithFirebase()
         }
     }
 }

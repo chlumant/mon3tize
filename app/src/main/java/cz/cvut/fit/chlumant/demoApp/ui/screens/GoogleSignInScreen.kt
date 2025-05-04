@@ -36,7 +36,7 @@ fun SignInScreen(
         viewModel.handleSignInResult(
             result,
             onSuccess = { email ->
-                navController.navigate("main")
+                navController.navigate("home")
             },
             onError = {
                 Log.e("SignInScreen", "Chyba přihlášení", it)

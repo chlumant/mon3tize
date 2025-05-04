@@ -1,70 +1,37 @@
 package cz.cvut.fit.chlumant.demoApp.ui.screens
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import android.app.Activity
-import android.util.Log
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import cz.cvut.fit.chlumant.mon3tize.adManagers.RewardedAdManager
-import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
-import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
-//import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
 import com.android.billingclient.api.*
+import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
+import cz.cvut.fit.chlumant.demoApp.viewmodels.PaymentViewModel
+import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 
 @Composable
 fun PaymentScreen(navController: NavHostController) {
-    val context = LocalContext.current
-    val activity = context as Activity
+    val activity = LocalActivity.current
 
-    val rewardedAdManager = remember {
-        RewardedAdManager(activity, UserKeys.AdMob.REWARDED_DEMO)
-    }
+    val viewModel: PaymentViewModel = viewModel()
 
-//    val billingManager = remember {
-//        BillingManager(context, PurchasesUpdatedListener { billingResult, purchases ->
-//            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-//                Log.d("Billing", "Subscription purchase successful: ${purchases.first().products}")
-//                // TODO: Aktivuj freemium např. Mon3tize.enableFreemium()
-//            } else {
-//                Log.w("Billing", "Subscription failed: ${billingResult.debugMessage}")
-//            }
-//        })
-//    }
-
-//    var subscriptionProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
-//    var oneTimeProductDetails by remember { mutableStateOf<ProductDetails?>(null) }
-
-//    LaunchedEffect(Unit) {
-//        try {
-//            rewardedAdManager.loadAd()
-//            billingManager.startConnection {
-//                billingManager.querySubscriptions("subscription_test_01") { details ->
-//                    if (details != null) {
-//                        Log.d("PaymentScreen", "Subscription loaded: ${details.name}")
-//                        subscriptionProductDetails = details
-//                    } else {
-//                        Log.e("PaymentScreen", "Subscription productDetails was null")
-//                    }
-//                }
+    val screenState by viewModel.screenStateStream.collectAsState()
 //
-//                billingManager.queryOneTimeProduct("remove_ads_test_01") {
-//                    oneTimeProductDetails = it
-//                }
-//            }
-//        } catch (e: Exception) {
-//            Log.e("PaymentScreen", "Exception during billing setup: ${e.localizedMessage}", e)
-//        }
+//    val rewardedAdManager = remember {
+//        RewardedAdManager(activity, UserKeys.AdMob.REWARDED_DEMO)
+//    }
+//
+//    LaunchedEffect(Unit) {
+//        rewardedAdManager.loadAd()
 //    }
 
     Scaffold(
@@ -77,46 +44,63 @@ fun PaymentScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Zaplat, zmrde, test",
+                text = "Vyberte, co chcete zakoupit",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .align(Alignment.CenterHorizontally)
             )
 
             Button(
                 onClick = {
-                    rewardedAdManager.showAd {
-                        Log.d("PaymentScreen", "User earned the reward!")
-                    }
+//                    rewardedAdManager.showAd {
+//                        Log.d("PaymentScreen", "User earned the reward!")
+//                    }
                 },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
                 Text("Watch Ad to Earn Reward")
             }
 
-//            Button(
-//                onClick = {
-//                    subscriptionProductDetails?.let {
-//                        billingManager.launchSubscriptionPurchaseFlow(activity, it)
-//                    } ?: run {
-//                        Log.e("PaymentScreen", "Subscription productDetails not loaded")
-//                    }
-//                },
-//                modifier = Modifier.fillMaxWidth().padding(16.dp)
-//            ) {
-//                Text("Buy Subscription")
-//            }
+            when (val currentScreenState = screenState) {
+                is PaymentViewModel.ScreenState.Error -> TODO()
+                is PaymentViewModel.ScreenState.Loaded -> {
+                    Button(
+                        onClick = {
+                            activity?.let { activity ->
+                                Mon3tize.billing.launchSubscriptionPurchaseFlow(
+                                    activity,
+                                    currentScreenState.subscription
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text("Koupit Předplatné")
+                    }
 
-//            Button(
-//                onClick = {
-//                    oneTimeProductDetails?.let {
-//                        billingManager.launchInAppPurchaseFlow(activity, it)
-//                    } ?: Log.e("PaymentScreen", "One-time product not loaded")
-//                },
-//                modifier = Modifier.fillMaxWidth().padding(16.dp)
-//            ) {
-//                Text("Jednorázový nákup")
-//            }
+                    Button(
+                        onClick = {
+                            activity?.let { activity ->
+                                Mon3tize.billing.launchInAppPurchaseFlow(activity, currentScreenState.oneTimeProduct)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text("Jednorázový nákup")
+                    }
+                }
+
+                is PaymentViewModel.ScreenState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+            }
 
             NavigationButton(navController, "Zpět na Home", "home")
         }

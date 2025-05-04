@@ -20,6 +20,7 @@ interface AdActions {
         activity: Activity,
         adUnitId: String,
         onRewarded: () -> Unit,
+        onAdClosed: () -> Unit,
         onError: (Throwable) -> Unit,
     )
 

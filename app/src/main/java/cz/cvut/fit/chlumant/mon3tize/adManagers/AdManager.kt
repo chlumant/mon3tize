@@ -3,10 +3,7 @@ package cz.cvut.fit.chlumant.mon3tize.adManagers
 import android.app.Activity
 import android.content.Context
 
-/**
- * TODO add class description
- */
-class AdManager(private val context: Context) : AdActions {
+class AdManager(context: Context) : AdActions {
 
     private val interstitialAdManager = InterstitialAdManager(context)
     private val rewardedAdManager = RewardedAdManager(context)
@@ -24,23 +21,24 @@ class AdManager(private val context: Context) : AdActions {
         adUnitId: String,
         onError: (Throwable) -> Unit
     ) {
-        TODO("Not yet implemented")
+        interstitialAdManager.preload(adUnitId, onError)
     }
 
     override suspend fun showRewarded(
         activity: Activity,
         adUnitId: String,
         onRewarded: () -> Unit,
+        onAdClosed: () -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        TODO("Not yet implemented")
+        rewardedAdManager.showAd(activity, adUnitId, onRewarded, onAdClosed, onError)
     }
 
     override suspend fun preloadRewarded(
         adUnitId: String,
         onError: (Throwable) -> Unit
     ) {
-        TODO("Not yet implemented")
+        rewardedAdManager.preload(adUnitId, onError)
     }
 
 }

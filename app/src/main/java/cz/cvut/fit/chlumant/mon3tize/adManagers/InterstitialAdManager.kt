@@ -38,7 +38,9 @@ class InterstitialAdManager(private val context: Context) {
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     Log.e("InterstitialAdManager", "Ad failed to load: ${error.message}")
-                    continuation.resumeWithExceptionIfActive(IllegalStateException(error.message))
+                    continuation.resumeWithExceptionIfActive(
+                        IllegalStateException(error.message)
+                    )
                 }
             })
         }
@@ -53,7 +55,7 @@ class InterstitialAdManager(private val context: Context) {
 
             override fun onAdFailedToShowFullScreenContent(error: AdError) {
                 Log.e("InterstitialAdManager", "Ad failed to show: ${error.message}")
-                onError(java.lang.IllegalStateException(error.message))
+                onError(IllegalStateException(error.message))
             }
         }
     }
@@ -64,6 +66,7 @@ class InterstitialAdManager(private val context: Context) {
             ad.setCallback(onAdClosed, onError)
             ad.show(activity)
             Log.d("InterstitialAdManager", "Interstitial ad displayed")
+            preload(adUnitId, onError)
         } catch (e: Exception) {
             Log.d("InterstitialAdManager", "Error while showing ad $e")
             onError(e)

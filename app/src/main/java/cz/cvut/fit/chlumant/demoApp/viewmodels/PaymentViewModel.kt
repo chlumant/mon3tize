@@ -42,6 +42,8 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
+//    TODO: kdyz je to takhle implementovany, tak muzu mit ve viewmodelu max jeden One-time a jeden Subscription?
+//    v tom loaded mit nejaky listy nebo tak neco? idk
     sealed interface ScreenState {
 
         data object Loading : ScreenState

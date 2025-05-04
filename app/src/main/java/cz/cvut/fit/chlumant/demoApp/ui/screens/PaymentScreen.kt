@@ -70,7 +70,7 @@ fun PaymentScreen(navController: NavHostController) {
                     Button(
                         onClick = {
                             activity?.let { activity ->
-                                Mon3tize.billingManager.launchSubscriptionPurchaseFlow(
+                                Mon3tize.billing.launchSubscriptionPurchaseFlow(
                                     activity,
                                     currentScreenState.subscription
                                 )
@@ -86,7 +86,7 @@ fun PaymentScreen(navController: NavHostController) {
                     Button(
                         onClick = {
                             activity?.let { activity ->
-                                Mon3tize.billingManager.launchInAppPurchaseFlow(activity, currentScreenState.oneTimeProduct)
+                                Mon3tize.billing.launchInAppPurchaseFlow(activity, currentScreenState.oneTimeProduct)
                             }
                         },
                         modifier = Modifier

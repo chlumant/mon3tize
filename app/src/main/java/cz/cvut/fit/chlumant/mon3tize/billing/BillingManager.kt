@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import androidx.core.net.toUri
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -20,11 +21,12 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.error
 
 internal class BillingManager(
     context: Context,
     listener: PurchasesUpdatedListener
-) {
+) : BillingActions {
 
     private val _isBillingReady = MutableStateFlow(false)
 
@@ -67,7 +69,7 @@ internal class BillingManager(
         }
     }
 
-    suspend fun getSubscriptionDetails(productId: String): ProductDetails {
+    override suspend fun getSubscriptionDetails(productId: String): ProductDetails {
         if(!_isBillingReady.value){
             startConnection()
         }
@@ -88,9 +90,50 @@ internal class BillingManager(
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         val result = productDetailsList.firstOrNull()
                         if (result != null) {
+                            Log.d("BillingManager", "Subscription loaded: ${result.name}")
                             continuation.resume(result)
                         } else {
-                            Log.e("BillingManager", "No matching product found for $productId")
+                            Log.e("BillingManager", "No matching subscription found for $productId")
+                            error("No matching subscription found for $productId")
+                        }
+                    } else {
+                        Log.e("BillingManager", "Query failed: ${billingResult.debugMessage}")
+                        error("Query failed: ${billingResult.debugMessage}")
+                    }
+                }
+            } catch (e: Throwable) {
+                continuation.resumeWithException(e)
+            }
+        }
+    }
+
+    override suspend fun getOneTimeProductDetails(productId: String): ProductDetails {
+        if (!_isBillingReady.value) {
+            startConnection()
+        }
+
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val params = QueryProductDetailsParams.newBuilder()
+                    .setProductList(
+                        listOf(
+                            QueryProductDetailsParams.Product.newBuilder()
+                                .setProductId(productId)
+                                .setProductType(BillingClient.ProductType.INAPP)
+                                .build()
+                        )
+                    )
+                    .build()
+
+                billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        val result = productDetailsList.firstOrNull()
+                        if (result != null) {
+                            Log.d("BillingManager", "One-time product loaded: ${result.name}")
+                            continuation.resume(result)
+                        } else {
+                            val msg = "No matching one-time product found for $productId"
+                            Log.e("BillingManager", msg)
                             error("No matching product found for $productId")
                         }
                     } else {
@@ -104,146 +147,146 @@ internal class BillingManager(
         }
     }
 
-    fun getOneTimeProductDetails(productId: String):ProductDetails {
-        val params = QueryProductDetailsParams.newBuilder()
-            .setProductList(
-                listOf(
-                    QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId(productId)
-                        .setProductType(BillingClient.ProductType.INAPP)
-                        .build()
-                )
-            )
-            .build()
 
-        billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                val result = productDetailsList.firstOrNull()
-                if (result == null) {
-                    Log.e("BillingManager", "One-time test product not found.")
-                } else {
-                    Log.d("BillingManager", "One-time test product loaded: ${result.name}")
-                }
-                onResult(result)
+    //TODO: idk jestli spravne vyhazuju ty vyjimky + obalit launche try catchem nekde ve ViewModelu?
+    override fun launchInAppPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
+        try {
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(
+                    listOf(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .build()
+                    )
+                )
+                .build()
+
+            val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+
+            if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                val msg = "launchInAppPurchaseFlow failed: ${billingResult.responseCode} - ${billingResult.debugMessage}"
+                Log.e("BillingManager", msg)
+                throw IllegalStateException(msg)
             } else {
-                Log.e("BillingManager", "Query failed: ${billingResult.debugMessage}")
-                onResult(null)
+                Log.d("BillingManager", "launchInAppPurchaseFlow launched successfully.")
             }
+        } catch (e: Exception) {
+            Log.e("BillingManager", "launchInAppPurchaseFlow exception: ${e.localizedMessage}", e)
+            throw e
         }
     }
 
-    fun launchInAppPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
-        val billingFlowParams = BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(
-                listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(productDetails)
-                        .build()
+    override fun launchSubscriptionPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
+        try {
+            val offerToken = productDetails.subscriptionOfferDetails
+                ?.firstOrNull()
+                ?.offerToken
+                ?: throw IllegalStateException("No offer token available for product ${productDetails.productId}")
+
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(
+                    listOf(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .setOfferToken(offerToken)
+                            .build()
+                    )
                 )
-            )
-            .build()
+                .build()
 
-        val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
-        Log.e(
-            "BillingManager",
-            "Query failed: ${billingResult.responseCode} - ${billingResult.debugMessage}"
-        )
-    }
-
-    fun launchSubscriptionPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
-        val offerToken = productDetails.subscriptionOfferDetails?.firstOrNull()?.offerToken ?: run {
-            Log.e(
-                "BillingManager",
-                "No offer token available for product ${productDetails.productId}"
-            )
-            return
-        }
-        val billingFlowParams = BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(
-                listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(productDetails)
-                        .setOfferToken(offerToken)
-                        .build()
-                )
-            )
-            .build()
-
-        val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
-        Log.d("BillingManager", "Launch billing flow result: ${billingResult.responseCode}")
-    }
-
-    private fun checkActiveSubscription(productId: String, onResult: (Boolean) -> Unit) {
-        val params = QueryPurchasesParams.newBuilder()
-            .setProductType(BillingClient.ProductType.SUBS)
-            .build()
-
-        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                val hasActiveSubscription = purchasesList.any { purchase ->
-                    purchase.products.contains(productId) &&
-                            purchase.isAcknowledged &&
-                            purchase.purchaseState == Purchase.PurchaseState.PURCHASED
-                }
-                onResult(hasActiveSubscription)
+            val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+            if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                val msg = "Subscription billing failed: ${billingResult.responseCode} - ${billingResult.debugMessage}"
+                Log.e("BillingManager", msg)
+                throw IllegalStateException(msg)
             } else {
-                Log.e(
-                    "BillingManager",
-                    "Failed to query subscriptions: ${billingResult.debugMessage}"
-                )
-                onResult(false)
+                Log.d("BillingManager", "Subscription purchase launched successfully.")
             }
+
+        } catch (e: Exception) {
+            Log.e("BillingManager", "launchSubscriptionPurchaseFlow exception: ${e.localizedMessage}", e)
+            throw e
         }
     }
 
-    private fun checkPurchasedProduct(productId: String, onResult: (Boolean) -> Unit) {
-        val params = QueryPurchasesParams.newBuilder()
-            .setProductType(BillingClient.ProductType.INAPP)
-            .build()
+    override suspend fun isSubscriptionActive(productId: String): Boolean {
+        if (!_isBillingReady.value) {
+            startConnection()
+        }
 
-        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                val hasProduct = purchasesList.any { purchase ->
-                    purchase.products.contains(productId) &&
-                            purchase.isAcknowledged &&
-                            purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val params = QueryPurchasesParams.newBuilder()
+                    .setProductType(BillingClient.ProductType.SUBS)
+                    .build()
+
+                billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        val hasActiveSubscription = purchasesList.any { purchase ->
+                            purchase.products.contains(productId) &&
+                                    purchase.isAcknowledged &&
+                                    purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+                        }
+                        continuation.resume(hasActiveSubscription)
+                    } else {
+                        val msg = "Failed to query subscriptions: ${billingResult.debugMessage}"
+                        Log.e("BillingManager", msg)
+                        error(msg)
+                    }
                 }
-                onResult(hasProduct)
-            } else {
-                Log.e(
-                    "BillingManager",
-                    "Failed to query one-time purchases: ${billingResult.debugMessage}"
-                )
-                onResult(false)
+            } catch (e: Throwable) {
+                continuation.resumeWithException(e)
             }
         }
     }
 
-    fun openSubscriptionManagement(context: Context, productId: String) {
-        val uri =
-            "https://play.google.com/store/account/subscriptions?sku=$productId&package=${context.packageName}"
-                .toUri()
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        intent.setPackage("com.android.vending")
-        context.startActivity(intent)
-    }
 
+    override suspend fun isOneTimeProductOwned(productId: String): Boolean {
+        if (!_isBillingReady.value) {
+            startConnection()
+        }
 
-    suspend fun isSubscriptionActive(productId: String): Boolean {
-        return suspendCoroutine { continuation ->
-            checkActiveSubscription(productId) { isActive ->
-                continuation.resume(isActive)
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val params = QueryPurchasesParams.newBuilder()
+                    .setProductType(BillingClient.ProductType.INAPP)
+                    .build()
+
+                billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        val hasProduct = purchasesList.any { purchase ->
+                            purchase.products.contains(productId) &&
+                                    purchase.isAcknowledged &&
+                                    purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+                        }
+                        continuation.resume(hasProduct)
+                    } else {
+                        val msg = "Failed to query one-time purchases: ${billingResult.debugMessage}"
+                        Log.e("BillingManager", msg)
+                        error(msg)
+                    }
+                }
+            } catch (e: Throwable) {
+                continuation.resumeWithException(e)
             }
         }
     }
 
-    suspend fun isOneTimeProductOwned(oneTimeProductId: String): Boolean {
-        return suspendCoroutine { continuation ->
-            checkPurchasedProduct(oneTimeProductId) { isPurchased ->
-                continuation.resume(isPurchased)
-            }
+
+    override fun openSubscriptionManagement(context: Context, productId: String) {
+        val uri = "https://play.google.com/store/account/subscriptions?sku=$productId&package=${context.packageName}".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.android.vending")
+        }
+
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            Log.e("BillingManager", "Google Play Store not available to handle subscription intent.")
+            Toast.makeText(context, "Nelze otevřít správu předplatného", Toast.LENGTH_LONG).show()
         }
     }
+
 
     //  dolu debug
     fun logActiveSubscriptions() {

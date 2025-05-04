@@ -1,42 +1,28 @@
 package cz.cvut.fit.chlumant.mon3tize.freemium
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import cz.cvut.fit.chlumant.mon3tize.Mon3tizeConfiguration
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlin.collections.get
 
 
-private val Context.dataStore by preferencesDataStore("mon3tize_prefs")
-
-
 internal class FreemiumManager(
-    private val context: Context,
     private val configuration: Mon3tizeConfiguration.Freemium
-) {
-    private val FREEMIUM_KEY = booleanPreferencesKey("freemium_active")
-    private val TRIAL_USED = booleanPreferencesKey("free_trial_used")
+) : FreemiumActions {
 
     private val firestore get() = Firebase.firestore
     private val auth get() = Firebase.auth
 
-    val isFreemiumActive: Flow<Boolean> = context.dataStore.data
-        .map { prefs -> prefs[FREEMIUM_KEY] == true }
-
-    suspend fun canActivateTrial(): Boolean {
+    override suspend fun canActivateTrial(): Boolean {
         checkFreemiumIsEnabled()
         val info = getFreemiumInfo() ?: return true
-        return !info.trialUsed
+        return !info.trialUsed && !info.isActive
     }
 
-    suspend fun resetTrialUsed() {
+    override suspend fun resetTrialUsed() {
         checkFreemiumIsEnabled()
         val info = FreemiumInfo(
             isActive = false,
@@ -47,10 +33,19 @@ internal class FreemiumManager(
         saveFreemiumInfo(info)
     }
 
-    suspend fun enableFreemium(
+    //TODO: nejsem si jistej jestli spravne pracuju s tim configem
+    private fun getTrialDurationMillis(): Long {
+        require(configuration is Mon3tizeConfiguration.Freemium.Enabled) {
+            "Freemium is disabled, cannot determine duration"
+        }
+        return configuration.freemiumDuration.inWholeMilliseconds
+    }
+
+    //TODO: mozna pridat ze uz je momentalne aktivni?
+    override suspend fun enableFreemium(
         onNeedSignIn: () -> Unit,
         onActivated: () -> Unit,
-        onAlreadyUsed: () -> Unit = {}
+        onAlreadyUsed: () -> Unit
     ) {
         checkFreemiumIsEnabled()
 
@@ -66,7 +61,7 @@ internal class FreemiumManager(
         }
 
         val now = System.currentTimeMillis()
-        val expiresAt = now + configuration.freemiumDuration.inWholeMilliseconds
+        val expiresAt = now + getTrialDurationMillis()
 
         val info = FreemiumInfo(
             isActive = true,
@@ -76,17 +71,10 @@ internal class FreemiumManager(
         )
         saveFreemiumInfo(info)
 
-        context.dataStore.edit { prefs ->
-            prefs[FREEMIUM_KEY] = true
-        }
-        context.dataStore.edit { prefs ->
-            prefs[TRIAL_USED] = true
-        }
-
         onActivated()
     }
 
-    suspend fun disableFreemium() {
+    override suspend fun disableFreemium() {
         checkFreemiumIsEnabled()
         saveFreemiumInfo(
             FreemiumInfo(
@@ -96,24 +84,10 @@ internal class FreemiumManager(
                 trialUsed = true
             )
         )
-
-        context.dataStore.edit { prefs ->
-            prefs[FREEMIUM_KEY] = false
-        }
     }
 
-    // Pujde do prdele
-    suspend fun synchronizeWithFirebase() {
-        try {
-            val info = getFreemiumInfo()
-            context.dataStore.edit { prefs ->
-                prefs[FREEMIUM_KEY] = info?.isActive == true
-            }
-        } catch (_: Exception) {
-        }
-    }
-
-    suspend fun isFreemiumCurrentlyActive(): Boolean {
+    //TODO; jak checkovat to uplynuti trialu v aplikaci
+    override suspend fun isFreemiumCurrentlyActive(): Boolean {
         if (configuration is Mon3tizeConfiguration.Freemium.Disabled) return false
         val info = getFreemiumInfo() ?: return false
         val now = System.currentTimeMillis()
@@ -132,7 +106,7 @@ internal class FreemiumManager(
         return info.isActive
     }
 
-    suspend fun getFreemiumInfo(): FreemiumInfo? {
+    override suspend fun getFreemiumInfo(): FreemiumInfo? {
         val user = auth.currentUser ?: return null
         val doc = firestore.collection("users").document(user.uid).get().await()
         val data = doc.get("freemium") as? Map<*, *> ?: return null
@@ -145,42 +119,12 @@ internal class FreemiumManager(
         )
     }
 
+    //TODO: tohle tady takhle nechat uvnitr vsech tech metod?
     private fun checkFreemiumIsEnabled() {
         if (configuration !is Mon3tizeConfiguration.Freemium.Enabled) {
             error("Freemium is disabled in configuration.")
         }
     }
-
-//    fun checkPremiumAccessWithTrialControl(
-//        subscriptionProductId: String,
-//        onAccessGranted: () -> Unit,
-//        onTrialExpired: () -> Unit,
-//        onNotSignedIn: () -> Unit = {},
-//    ) {
-//        val user = FirebaseAuth.getInstance().currentUser
-//        if (user == null) {
-//            onNotSignedIn()
-//            return
-//        }
-//
-//        CoroutineScope(Dispatchers.Main).launch {
-//            val hasTrial = isFreemiumCurrentlyActive()
-//            val trialUsed = getFreemiumInfo()?.trialUsed == true
-//
-//            val hasSubscription = suspendCoroutine<Boolean> { continuation ->
-//                Mon3tize.billingManager.checkActiveSubscription(subscriptionProductId) {
-//                    continuation.resume(it)
-//                }
-//            }
-//
-//            when {
-//                hasTrial || hasSubscription -> onAccessGranted()
-//                trialUsed -> onTrialExpired()
-//                else -> onNotSignedIn()
-//            }
-//        }
-//    }
-
 
     private suspend fun saveFreemiumInfo(info: FreemiumInfo) {
         val user = auth.currentUser ?: return

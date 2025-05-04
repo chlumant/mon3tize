@@ -16,12 +16,11 @@ class Mon3tizeDemoApp : Application() {
         Mon3tize.setUp(
             configuration = Mon3tizeConfiguration(
                 freemium = Mon3tizeConfiguration.Freemium.Enabled(10.days),
-                adMobEnabled = true,
             ),
             context = applicationContext
         )
         CoroutineScope(Dispatchers.IO).launch {
-            Mon3tize.freemiumManager.synchronizeWithFirebase()
+            Mon3tize.freemium.synchronizeWithFirebase()
         }
     }
 }

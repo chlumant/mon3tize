@@ -30,11 +30,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(navController: NavHostController) {
 
-    val manager = Mon3tize.freemiumManager
     val activity = LocalActivity.current
 
     LaunchedEffect(Unit) {
-        Mon3tize.preloadInterstitialAd(
+        Mon3tize.ads.preloadInterstitial(
             UserKeys.AdMob.INTERSTITIAL_DEMO,
             onError = {
                 showToast(activity, "Error while preloading add")
@@ -44,7 +43,7 @@ fun HomeScreen(navController: NavHostController) {
 
     LaunchedEffect(Unit) {
         val user = Firebase.auth.currentUser
-        val isFreemium = manager.isFreemiumCurrentlyActive()
+        val isFreemium = Mon3tize.freemium.isFreemiumCurrentlyActive()
         Log.d(
             "AUTH",
             "Uživatel: ${user?.email ?: "anonymní"} | Freemium aktivní: $isFreemium"

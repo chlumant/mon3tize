@@ -1,4 +1,4 @@
-package cz.cvut.fit.chlumant.mon3tize
+package cz.cvut.fit.chlumant.mon3tize.freemium
 
 data class FreemiumInfo(
     val isActive: Boolean = false,

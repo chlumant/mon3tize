@@ -1,7 +1,6 @@
 package cz.cvut.fit.chlumant.mon3tize.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -48,4 +47,36 @@ object Dialogs {
             }
         )
     }
+
+    @Composable
+    fun TrialExpiredDialog(
+        onDismiss: () -> Unit,
+        onGoToSubscription: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text("Zkušební doba skončila")
+            },
+            text = {
+                Text("Vaše bezplatná zkušební doba vypršela. Pokud chcete nadále používat prémiové funkce, zakupte si předplatné.")
+            },
+            confirmButton = {
+                Button(onClick = onGoToSubscription) {
+                    Text("Zobrazit předplatné")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    Text("Zrušit")
+                }
+            }
+        )
+    }
+
 }

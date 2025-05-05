@@ -16,7 +16,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.google.android.gms.ads.AdSize
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton

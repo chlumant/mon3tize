@@ -16,11 +16,9 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 import kotlin.error
 
 internal class BillingManager(
@@ -288,7 +286,7 @@ internal class BillingManager(
     }
 
 
-    //  dolu debug
+    //  dolu debug TODO: odstrani/neodstranit?
     fun logActiveSubscriptions() {
         val params = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.SUBS)
@@ -347,7 +345,6 @@ internal class BillingManager(
             }
         }
     }
-
 
     fun endConnection() {
         billingClient.endConnection()

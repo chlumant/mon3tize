@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cz.cvut.fit.chlumant.demoApp.viewmodels
 
 import android.app.Application

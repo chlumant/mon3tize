@@ -3,13 +3,11 @@ package cz.cvut.fit.chlumant.mon3tize.billing
 import android.util.Log
 import com.android.billingclient.api.*
 import cz.cvut.fit.chlumant.mon3tize.util.AppContextHolder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
+@Suppress("DEPRECATION")
 object PurchaseListener : PurchasesUpdatedListener {
 
     private const val TAG = "PurchaseListener"
-    private val billingClientScope = CoroutineScope(Dispatchers.IO)
 
     override fun onPurchasesUpdated(
         billingResult: BillingResult,

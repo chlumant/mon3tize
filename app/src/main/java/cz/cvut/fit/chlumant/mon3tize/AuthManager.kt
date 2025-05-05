@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cz.cvut.fit.chlumant.mon3tize
 
 import android.util.Log

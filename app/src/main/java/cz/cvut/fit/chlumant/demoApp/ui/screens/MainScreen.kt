@@ -18,9 +18,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
 
 
-import cz.cvut.fit.chlumant.mon3tize.Mon3tize
-
-
 @Composable
 fun MainScreen(navController: NavHostController) {
     RockPaperScissorsGame(navController)

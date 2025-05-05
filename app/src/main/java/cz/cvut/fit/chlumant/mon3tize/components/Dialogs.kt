@@ -48,6 +48,7 @@ object Dialogs {
         )
     }
 
+    //TODO: kde a jak pouzit? pouzit? smazat?
     @Composable
     fun TrialExpiredDialog(
         onDismiss: () -> Unit,
@@ -78,5 +79,4 @@ object Dialogs {
             }
         )
     }
-
 }

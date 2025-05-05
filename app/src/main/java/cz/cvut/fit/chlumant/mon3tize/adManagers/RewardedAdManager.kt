@@ -13,7 +13,6 @@ import cz.cvut.fit.chlumant.mon3tize.util.resumeIfActive
 import cz.cvut.fit.chlumant.mon3tize.util.resumeWithExceptionIfActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-
 class RewardedAdManager(private val context: Context) {
 
     var preloadedAd: PreloadedAd? = null

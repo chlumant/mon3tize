@@ -1,8 +1,6 @@
 package cz.cvut.fit.chlumant.demoApp.ui.screens
 
-import android.app.Activity
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +22,8 @@ import com.google.firebase.auth.auth
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
-import cz.cvut.fit.chlumant.mon3tize.components.AdBanner
+import cz.cvut.fit.chlumant.mon3tize.components.banners.AdBanner
+import cz.cvut.fit.chlumant.mon3tize.components.banners.BannerType
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,8 +52,13 @@ fun HomeScreen(navController: NavHostController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            AdBanner(adUnitId = UserKeys.AdMob.BANNER_DEMO, adSize = AdSize.FULL_BANNER)
-        }
+            AdBanner(
+                adUnitId = UserKeys.AdMob.BANNER_DEMO,
+                bannerType = BannerType.FullBanner,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            )}
     ) { innerPadding ->
         Column(
             modifier = Modifier

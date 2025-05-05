@@ -28,4 +28,9 @@ interface AdActions {
         adUnitId: String,
         onError: (Throwable) -> Unit,
     )
+
+    fun showToast(
+        activity: Activity?,
+        message: String,
+    )
 }

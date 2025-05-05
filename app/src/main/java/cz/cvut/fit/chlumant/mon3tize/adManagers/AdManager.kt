@@ -2,6 +2,7 @@ package cz.cvut.fit.chlumant.mon3tize.adManagers
 
 import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 
 class AdManager(context: Context) : AdActions {
 
@@ -41,4 +42,11 @@ class AdManager(context: Context) : AdActions {
         rewardedAdManager.preload(adUnitId, onError)
     }
 
+    override fun showToast(activity: Activity?, message: String) {
+        Toast.makeText(
+            activity,
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 }

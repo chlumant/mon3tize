@@ -3,6 +3,7 @@ package cz.cvut.fit.chlumant.mon3tize.util
 import android.annotation.SuppressLint
 import android.content.Context
 
+//TODO: nevim jestli tahle classa neni trochu prasarna
 @SuppressLint("StaticFieldLeak")
 object AppContextHolder {
     private var _context: Context? = null

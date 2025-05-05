@@ -11,10 +11,15 @@ import kotlinx.coroutines.launch
 
 class FreemiumViewModel : ViewModel() {
 
-    private val manager = Mon3tize.freemiumManager
+    private val _isFreemiumActive = MutableStateFlow(false)
+    val isFreemiumActive: StateFlow<Boolean> = _isFreemiumActive
 
-    val isFreemiumActive = manager.isFreemiumActive
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    init {
+        viewModelScope.launch {
+            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
+            _isFreemiumActive.value = active
+        }
+    }
 
     private val _showTrialUsedDialog = MutableStateFlow(false)
     val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
@@ -24,7 +29,7 @@ class FreemiumViewModel : ViewModel() {
         onActivated: () -> Unit
     ) {
         viewModelScope.launch {
-            manager.enableFreemium(
+            Mon3tize.freemium.enableFreemium(
                 onNeedSignIn = onNeedSignIn,
                 onActivated = onActivated,
                 onAlreadyUsed = {
@@ -34,13 +39,20 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
-//  TODO: tahle hardcoded vec se mi moc nelibi
+//  TODO: tahle hardcoded vec se mi moc nelibi (ID)
     fun checkPremiumAccess(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val result = Mon3tize.freemiumManager.isPremiumAccessAvailable(
+            val result = Mon3tize.isPremiumAccessAvailable(
                 subscriptionProductId = "subscription_test_01"
             )
             onResult(result)
+        }
+    }
+
+    fun refreshFreemiumStatus() {
+        viewModelScope.launch {
+            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
+            _isFreemiumActive.value = active
         }
     }
 
@@ -50,13 +62,7 @@ class FreemiumViewModel : ViewModel() {
 
     fun disableFreemium() {
         viewModelScope.launch {
-            manager.disableFreemium()
-        }
-    }
-
-    fun syncFromCloud() {
-        viewModelScope.launch {
-            manager.synchronizeWithFirebase()
+            Mon3tize.freemium.disableFreemium()
         }
     }
 }

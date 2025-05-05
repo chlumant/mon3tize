@@ -19,9 +19,6 @@ class Mon3tizeDemoApp : Application() {
             ),
             context = applicationContext
         )
-        CoroutineScope(Dispatchers.IO).launch {
-            Mon3tize.freemium.synchronizeWithFirebase()
-        }
     }
 }
 

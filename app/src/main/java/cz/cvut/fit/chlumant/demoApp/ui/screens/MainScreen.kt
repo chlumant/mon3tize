@@ -31,13 +31,11 @@ fun RockPaperScissorsGame(navController: NavHostController) {
     val viewModel: FreemiumViewModel = viewModel()
     var hasPremiumAccess by remember { mutableStateOf(false) }
 
-    // Načteme, zda má uživatel prémiový přístup
     LaunchedEffect(Unit) {
         viewModel.checkPremiumAccess { result ->
             hasPremiumAccess = result
         }
     }
-
 
     var playerChoice by remember { mutableStateOf<String?>(null) }
     var computerChoice by remember { mutableStateOf<String?>(null) }

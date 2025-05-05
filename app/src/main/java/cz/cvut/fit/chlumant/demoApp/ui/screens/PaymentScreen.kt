@@ -1,5 +1,6 @@
 package cz.cvut.fit.chlumant.demoApp.ui.screens
 
+import android.util.Log
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,26 +14,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.android.billingclient.api.*
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.demoApp.viewmodels.PaymentViewModel
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+import kotlinx.coroutines.launch
 
 @Composable
 fun PaymentScreen(navController: NavHostController) {
+
     val activity = LocalActivity.current
-
     val viewModel: PaymentViewModel = viewModel()
-
     val screenState by viewModel.screenStateStream.collectAsState()
-//
-//    val rewardedAdManager = remember {
-//        RewardedAdManager(activity, UserKeys.AdMob.REWARDED_DEMO)
-//    }
-//
-//    LaunchedEffect(Unit) {
-//        rewardedAdManager.loadAd()
-//    }
+
+    LaunchedEffect(Unit) {
+        Mon3tize.ads.preloadRewarded(
+            adUnitId = UserKeys.AdMob.REWARDED_DEMO,
+            onError = {
+                Mon3tize.ads.showToast(activity, "Error while preloading add")
+        })
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -51,11 +52,21 @@ fun PaymentScreen(navController: NavHostController) {
                     .align(Alignment.CenterHorizontally)
             )
 
+            val coroutineScope = rememberCoroutineScope()
             Button(
                 onClick = {
-//                    rewardedAdManager.showAd {
-//                        Log.d("PaymentScreen", "User earned the reward!")
-//                    }
+                    activity?.let { activity ->
+                        coroutineScope.launch {
+                            Mon3tize.ads.showRewarded(
+                                activity = activity,
+                                adUnitId = UserKeys.AdMob.INTERSTITIAL_DEMO,
+                                onRewarded = {},
+                                onClose = {32},
+                                onError = {
+                                    Mon3tize.ads.showToast(activity, "Error while showing ad")
+                            })
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

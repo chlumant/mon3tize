@@ -53,7 +53,7 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
                 true -> {
                     Text("Máte aktivní předplatné nebo freemium.")
                     Button(onClick = {
-                        Mon3tize.billingManager.openSubscriptionManagement(context, "subscription_test_01") },
+                        Mon3tize.billing.openSubscriptionManagement(context, "subscription_test_01") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)) {

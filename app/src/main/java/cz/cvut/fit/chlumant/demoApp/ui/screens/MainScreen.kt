@@ -38,12 +38,6 @@ fun RockPaperScissorsGame(navController: NavHostController) {
         }
     }
 
-    LaunchedEffect(Unit) {
-        Mon3tize.billingManager.logActiveSubscriptions()
-        Mon3tize.billingManager.logAllActiveSubscriptions()
-    }
-
-
 
     var playerChoice by remember { mutableStateOf<String?>(null) }
     var computerChoice by remember { mutableStateOf<String?>(null) }

@@ -36,7 +36,7 @@ fun HomeScreen(navController: NavHostController) {
         Mon3tize.ads.preloadInterstitial(
             UserKeys.AdMob.INTERSTITIAL_DEMO,
             onError = {
-                showToast(activity, "Error while preloading add")
+                Mon3tize.ads.showToast(activity, "Error while preloading add")
             }
         )
     }
@@ -75,7 +75,7 @@ fun HomeScreen(navController: NavHostController) {
                                 adUnitId = UserKeys.AdMob.INTERSTITIAL_DEMO,
                                 onClose = { navController.navigate("freemium") },
                                 onError = {
-                                    showToast(activity, "Error while showing ad")
+                                    Mon3tize.ads.showToast(activity, "Error while showing ad")
                                 }
                             )
                         }
@@ -92,12 +92,3 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 }
-
-private fun showToast(activity: Activity?, message: String) {
-    Toast.makeText(
-        activity,
-        message,
-        Toast.LENGTH_SHORT
-    ).show()
-}
-

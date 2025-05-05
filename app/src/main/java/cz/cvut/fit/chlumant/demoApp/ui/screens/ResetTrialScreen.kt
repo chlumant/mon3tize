@@ -28,7 +28,7 @@ fun ResetTrialScreen(navController: NavHostController) {
             Button(
                 onClick = {
                     scope.launch {
-                        Mon3tize.freemiumManager.resetTrialUsed()
+                        Mon3tize.freemium.resetTrialUsed()
                     }
                     navController.navigate("home")
                 },

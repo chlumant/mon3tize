@@ -18,6 +18,7 @@ import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.demoApp.viewmodels.PaymentViewModel
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.launch
+import cz.cvut.fit.chlumant.mon3tize.rewards.FreemiumRewardHandler
 
 @Composable
 fun PaymentScreen(navController: NavHostController) {
@@ -59,8 +60,16 @@ fun PaymentScreen(navController: NavHostController) {
                             Mon3tize.ads.showRewarded(
                                 activity = activity,
                                 adUnitId = UserKeys.AdMob.REWARDED_DEMO,
-                                //TODO: co s tim on rewarded?
-                                onRewarded = {},
+                                //TODO: reward handling?
+                                onRewarded = {
+                                    coroutineScope.launch {
+                                        Mon3tize.freemiumReward.handleReward(
+                                            onError = {
+                                                Mon3tize.ads.showToast(activity, "Error while handling reward")
+                                            }
+                                        )
+                                    }
+                                },
                                 onClose = {},
                                 onError = {
                                     Mon3tize.ads.showToast(activity, "Error while showing ad")
@@ -72,7 +81,7 @@ fun PaymentScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Watch Ad to Earn Reward")
+                Text("Watch Ad to Earn 1 Day Free Trial")
             }
 
             when (val currentScreenState = screenState) {

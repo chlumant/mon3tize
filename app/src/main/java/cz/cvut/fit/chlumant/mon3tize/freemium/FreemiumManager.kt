@@ -6,6 +6,7 @@ import com.google.firebase.ktx.Firebase
 import cz.cvut.fit.chlumant.mon3tize.Mon3tizeConfiguration
 import kotlinx.coroutines.tasks.await
 import kotlin.collections.get
+import kotlin.time.Duration
 
 
 internal class FreemiumManager(
@@ -121,6 +122,24 @@ internal class FreemiumManager(
         if (configuration !is Mon3tizeConfiguration.Freemium.Enabled) {
             error("Freemium is disabled in configuration.")
         }
+    }
+
+    override suspend fun extendFreemiumBy(duration: Duration) {
+        checkFreemiumIsEnabled()
+        val info = getFreemiumInfo()
+        val now = System.currentTimeMillis()
+
+        val updated = if (info?.isActive == true && now < info.expiresAt) {
+            info.copy(expiresAt = info.expiresAt + duration.inWholeMilliseconds)
+        } else {
+            FreemiumInfo(
+                isActive = true,
+                activatedAt = now,
+                expiresAt = now + duration.inWholeMilliseconds,
+                trialUsed = false
+            )
+        }
+        saveFreemiumInfo(updated)
     }
 
     private suspend fun saveFreemiumInfo(info: FreemiumInfo) {

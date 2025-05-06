@@ -10,6 +10,8 @@ import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
 import cz.cvut.fit.chlumant.mon3tize.billing.PurchaseListener
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumActions
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumManager
+import cz.cvut.fit.chlumant.mon3tize.rewards.FreemiumRewardHandler
+import cz.cvut.fit.chlumant.mon3tize.rewards.RewardHandler
 import cz.cvut.fit.chlumant.mon3tize.util.AppContextHolder
 
 object Mon3tize {
@@ -31,6 +33,12 @@ object Mon3tize {
 
     val ads: AdActions get() = adManager
 
+    //TODO: :RewardHandler nebo :FreemiumRewardHandler???
+    @SuppressLint("StaticFieldLeak")
+    private lateinit var freemiumRewardHandler: RewardHandler
+
+    val freemiumReward: RewardHandler get() = freemiumRewardHandler
+
 
     fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
@@ -45,6 +53,8 @@ object Mon3tize {
 
         this.freemiumManager =
             FreemiumManager(configuration.freemium)
+
+        this.freemiumRewardHandler = FreemiumRewardHandler()
         FirebaseApp.initializeApp(context)
     }
 

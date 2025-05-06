@@ -7,7 +7,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import cz.cvut.fit.chlumant.mon3tize.AuthManager
 import kotlinx.coroutines.launch
 
 @Composable

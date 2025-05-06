@@ -37,7 +37,6 @@ fun RockPaperScissorsGame(navController: NavHostController) {
         viewModel.checkTrialStatus()
     }
 
-    //TODO: rozsirit ten dialog i na uplynuti predplatnyho
     if (trialExpired) {
         Dialogs.TrialExpiredDialog(
             onDismiss = {

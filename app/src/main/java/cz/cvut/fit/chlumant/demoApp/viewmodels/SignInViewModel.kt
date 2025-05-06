@@ -6,9 +6,9 @@ import android.app.Application
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.AndroidViewModel
-import cz.cvut.fit.chlumant.mon3tize.AuthManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 
 class SignInViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -28,7 +28,7 @@ class SignInViewModel(application: Application) : AndroidViewModel(application) 
                 return
             }
 
-            AuthManager.signInWithGoogleToken(idToken) { success, uid ->
+            Mon3tize.freemium.auth.signInWithGoogleToken(idToken) { success, uid ->
                 if (success && uid != null) {
                     Log.d("SignIn", "Přihlášení úspěšné: $uid")
                     onSuccess(uid)

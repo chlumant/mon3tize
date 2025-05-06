@@ -1,32 +1,17 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
 }
 
 android {
-    namespace = "cz.cvut.fit.chlumant.demoApp"
+    namespace = "cz.cvut.fit.chlumant.mon3tize"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "cz.cvut.fit.chlumant.demoApp"
         minSdk = 26
-        targetSdk = 36
-        versionCode = 9
-        versionName = "1.0.8"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -35,13 +20,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
-    implementation(project(":mon3tize"))
     implementation(libs.navigation.compose)
     implementation(libs.datastore)
     implementation(libs.billing)

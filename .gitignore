@@ -1,18 +1,42 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+out/
+.out/
+out/
+build/
+.idea/*
+.gradle/
+captures/
+.kotlin/
+
+
+#iml files
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Local configuration file (sdk path, etc)
 local.properties
-*.aab
-*.log
-.kotlin/errors/
+
+# linux files
+.directory
+*.*~
+
+# mac files
+.DS_Store
+
+Thumbs.db
+thumbs.db
+
+outputs/mapping.txt
+
+artwork

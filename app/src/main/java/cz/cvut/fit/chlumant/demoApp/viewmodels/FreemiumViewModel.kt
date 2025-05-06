@@ -2,7 +2,7 @@ package cz.cvut.fit.chlumant.demoApp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys.AdMob.subscription_5_minutes
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys.Billing.SUBSCRIPTION_PRODUCT_ID
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,11 +49,11 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
-//  TODO: tahle hardcoded vec se mi moc nelibi (ID)
+    //  TODO: tahle hardcoded vec se mi moc nelibi (ID)
     fun checkPremiumAccess(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val result = Mon3tize.isPremiumAccessAvailable(
-                subscriptionProductId = subscription_5_minutes
+                subscriptionProductId = SUBSCRIPTION_PRODUCT_ID
             )
             onResult(result)
         }
@@ -81,7 +81,7 @@ class FreemiumViewModel : ViewModel() {
     //TODO: !isActive && (info?.trialUsed == true || subscriptionExpired) && !trialExpiredShown
     fun checkTrialStatus() {
         viewModelScope.launch {
-            val isActive = Mon3tize.isPremiumAccessAvailable(subscription_5_minutes)
+            val isActive = Mon3tize.isPremiumAccessAvailable(SUBSCRIPTION_PRODUCT_ID)
             val info = Mon3tize.freemium.getFreemiumInfo()
 
             val shouldShowDialog = !isActive && info?.trialUsed == true && !trialExpiredShown

@@ -20,6 +20,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
+import cz.cvut.fit.chlumant.demoApp.ui.components.showToast
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import cz.cvut.fit.chlumant.mon3tize.components.banners.AdBanner
 import cz.cvut.fit.chlumant.mon3tize.components.banners.BannerType
@@ -34,7 +35,7 @@ fun HomeScreen(navController: NavHostController) {
         Mon3tize.ads.preloadInterstitial(
             UserKeys.AdMob.INTERSTITIAL_DEMO,
             onError = {
-                Mon3tize.ads.showToast(activity, "Error while preloading add")
+                showToast(activity, "Error while preloading add")
             }
         )
     }
@@ -78,7 +79,7 @@ fun HomeScreen(navController: NavHostController) {
                                 adUnitId = UserKeys.AdMob.INTERSTITIAL_DEMO,
                                 onClose = { navController.navigate("freemium") },
                                 onError = {
-                                    Mon3tize.ads.showToast(activity, "Error while showing ad")
+                                    showToast(activity, "Error while showing ad")
                                 }
                             )
                         }

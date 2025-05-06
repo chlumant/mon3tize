@@ -3,11 +3,20 @@ package cz.cvut.fit.chlumant.demoApp.ui.screens
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,10 +24,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
+import cz.cvut.fit.chlumant.demoApp.ui.components.showToast
 import cz.cvut.fit.chlumant.demoApp.viewmodels.PaymentViewModel
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.launch
-import cz.cvut.fit.chlumant.mon3tize.rewards.FreemiumRewardHandler
 
 @Composable
 fun PaymentScreen(navController: NavHostController) {
@@ -31,8 +40,8 @@ fun PaymentScreen(navController: NavHostController) {
         Mon3tize.ads.preloadRewarded(
             adUnitId = UserKeys.AdMob.REWARDED_DEMO,
             onError = {
-                Mon3tize.ads.showToast(activity, "Error while preloading add")
-        })
+                showToast(activity, "Error while preloading add")
+            })
     }
 
     Scaffold(
@@ -60,20 +69,10 @@ fun PaymentScreen(navController: NavHostController) {
                             Mon3tize.ads.showRewarded(
                                 activity = activity,
                                 adUnitId = UserKeys.AdMob.REWARDED_DEMO,
-                                //TODO: reward handling?
-                                onRewarded = {
-                                    coroutineScope.launch {
-                                        Mon3tize.freemiumReward.handleReward(
-                                            onError = {
-                                                Mon3tize.ads.showToast(activity, "Error while handling reward")
-                                            }
-                                        )
-                                    }
-                                },
+                                onRewardEarn = { reward -> viewModel.handleReward(reward) },
                                 onClose = {},
-                                onError = {
-                                    Mon3tize.ads.showToast(activity, "Error while showing ad")
-                            })
+                                onError = { showToast(activity, "Error while showing ad") }
+                            )
                         }
                     }
                 },
@@ -85,7 +84,19 @@ fun PaymentScreen(navController: NavHostController) {
             }
 
             when (val currentScreenState = screenState) {
-                is PaymentViewModel.ScreenState.Error -> TODO()
+                is PaymentViewModel.ScreenState.Error -> {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Text("Error while loading data")
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(onClick = viewModel::loadProducts) {
+                            Text("Reload")
+                        }
+                    }
+                }
                 is PaymentViewModel.ScreenState.Loaded -> {
                     Button(
                         onClick = {

@@ -59,8 +59,9 @@ fun PaymentScreen(navController: NavHostController) {
                             Mon3tize.ads.showRewarded(
                                 activity = activity,
                                 adUnitId = UserKeys.AdMob.REWARDED_DEMO,
+                                //TODO: co s tim on rewarded?
                                 onRewarded = {},
-                                onClose = {32},
+                                onClose = {},
                                 onError = {
                                     Mon3tize.ads.showToast(activity, "Error while showing ad")
                             })

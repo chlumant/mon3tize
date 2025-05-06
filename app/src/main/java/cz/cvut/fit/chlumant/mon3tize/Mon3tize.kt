@@ -49,7 +49,6 @@ object Mon3tize {
     }
 
 
-    //TODO: nemuze tohle sletet v zavislosti na tom co mam v configurationu?
     suspend fun isPremiumAccessAvailable(subscriptionProductId: String): Boolean {
 
         val hasActiveSubscription = billing.isSubscriptionActive(subscriptionProductId)

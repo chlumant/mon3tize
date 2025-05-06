@@ -40,7 +40,6 @@ internal class FreemiumManager(
         return configuration.freemiumDuration.inWholeMilliseconds
     }
 
-    //TODO: mozna pridat ze uz je momentalne aktivni?
     override suspend fun enableFreemium(
         onNeedSignIn: () -> Unit,
         onActivated: () -> Unit,
@@ -85,7 +84,6 @@ internal class FreemiumManager(
         )
     }
 
-    //TODO; jak checkovat to uplynuti trialu v aplikaci + zavolat tu dialog
     override suspend fun isFreemiumCurrentlyActive(): Boolean {
         if (configuration is Mon3tizeConfiguration.Freemium.Disabled) return false
         val info = getFreemiumInfo() ?: return false

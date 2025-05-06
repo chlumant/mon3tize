@@ -42,6 +42,7 @@ class AdManager(context: Context) : AdActions {
         rewardedAdManager.preload(adUnitId, onError)
     }
 
+    //TODO: nepresunout tohle nekam jinam a pouzivat to vsude?
     override fun showToast(activity: Activity?, message: String) {
         Toast.makeText(
             activity,

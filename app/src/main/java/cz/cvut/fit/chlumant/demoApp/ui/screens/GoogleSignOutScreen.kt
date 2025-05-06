@@ -35,7 +35,7 @@ fun SignOutScreen(
                 onClick = {
                     scope.launch {
                         AuthManager.signOut()
-                        navController.navigate("signin") {
+                        navController.navigate("home") {
                             popUpTo("home") { inclusive = true }
                         }
                     }

@@ -17,6 +17,8 @@ import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 import cz.cvut.fit.chlumant.mon3tize.AuthManager
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 
+import android.widget.Toast
+
 @Composable
 fun SignInScreen(
     navController: NavHostController,
@@ -36,9 +38,11 @@ fun SignInScreen(
         viewModel.handleSignInResult(
             result,
             onSuccess = { email ->
-                navController.navigate("home")
+                navController.popBackStack()
             },
+            //TODO: vyresit onError - nejaky vyjimky nebo staci takhle toast
             onError = {
+                Toast.makeText(context, "Přihlášení selhalo. Zkuste to prosím znovu.", Toast.LENGTH_LONG).show()
                 Log.e("SignInScreen", "Chyba přihlášení", it)
             }
         )

@@ -4,12 +4,75 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.services)
+    id("maven-publish")
+    id("signing")
+    id("org.jetbrains.dokka") version "2.0.0"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                groupId = "io.github.chlumant"
+                artifactId = "mon3tize"
+                version = "0.1.0"
+
+                pom {
+                    name.set("Mon3tize")
+                    description.set("A library for monetizing your app with ads, in-app purchases, and freemium features.")
+                    url.set("https://github.com/chlumant/mon3tize")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("chlumant")
+                            name.set("chlumant")
+                            email.set("chlumant@cvut.cz")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://github.com/chlumant/mon3tize.git")
+                        developerConnection.set("scm:git:ssh://git@github.com:chlumant/mon3tize.git")
+                        url.set("https://github.com/chlumant/mon3tize")
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "OSSRH"
+                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                credentials {
+                    username = findProperty("ossrhUsername") as String
+                    password = findProperty("ossrhPassword") as String
+                }
+            }
+        }
+    }
+
+    signing {
+        useInMemoryPgpKeys(
+            findProperty("signing.keyId") as String,
+            findProperty("signing.secretKey") as String,
+            findProperty("signing.password") as String
+        )
+        sign(publishing.publications["release"])
+    }
 }
 
 android {
     namespace = "cz.cvut.fit.chlumant.mon3tize"
     compileSdk = 36
+
+    group = "io.github.chlumant"
+    version = "0.1.0"
 
     defaultConfig {
         minSdk = 26
@@ -26,6 +89,13 @@ android {
 
     kotlinOptions {
         jvmTarget = "11"
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 

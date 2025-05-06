@@ -33,7 +33,7 @@ internal object AuthManager : FirebaseAuthActions {
             }
     }
 
-    fun signOut() {
+    override fun signOut() {
         auth.signOut()
         Mon3tizeLogger.d("AuthManager", "Uživatel byl odhlášen.")
     }

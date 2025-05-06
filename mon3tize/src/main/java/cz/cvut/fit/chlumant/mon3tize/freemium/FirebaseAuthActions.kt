@@ -11,5 +11,7 @@ interface FirebaseAuthActions {
 
     fun getGoogleSignInClient(context: Context, webClientId: String): GoogleSignInClient
 
+    fun signOut()
+
     // TODO - Přidat další funkce
 }

@@ -13,15 +13,23 @@ class FreemiumViewModel : ViewModel() {
     private val _isFreemiumActive = MutableStateFlow(false)
     val isFreemiumActive: StateFlow<Boolean> = _isFreemiumActive
 
+    private val _trialExpired = MutableStateFlow(false)
+    val trialExpired: StateFlow<Boolean> = _trialExpired
+    private var trialExpiredShown = false
+
+    private val _showTrialUsedDialog = MutableStateFlow(false)
+    val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
+
     init {
+        syncFreemiumStatus()
+    }
+
+    private fun syncFreemiumStatus() {
         viewModelScope.launch {
             val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
             _isFreemiumActive.value = active
         }
     }
-
-    private val _showTrialUsedDialog = MutableStateFlow(false)
-    val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
 
     fun startTrial(
         onNeedSignIn: () -> Unit,
@@ -30,7 +38,10 @@ class FreemiumViewModel : ViewModel() {
         viewModelScope.launch {
             Mon3tize.freemium.enableFreemium(
                 onNeedSignIn = onNeedSignIn,
-                onActivated = onActivated,
+                onActivated = {
+                    syncFreemiumStatus()
+                    onActivated()
+                },
                 onAlreadyUsed = {
                     _showTrialUsedDialog.value = true
                 }
@@ -62,6 +73,27 @@ class FreemiumViewModel : ViewModel() {
     fun disableFreemium() {
         viewModelScope.launch {
             Mon3tize.freemium.disableFreemium()
+            syncFreemiumStatus()
         }
+    }
+
+    //TODO: nemel bych pro uplynuti predplatnyho mit nejakej podobnej booelan jako trialUsed
+    //TODO: !isActive && (info?.trialUsed == true || subscriptionExpired) && !trialExpiredShown
+    fun checkTrialStatus() {
+        viewModelScope.launch {
+            val isActive = Mon3tize.isPremiumAccessAvailable(subscription_5_minutes)
+            val info = Mon3tize.freemium.getFreemiumInfo()
+
+            val shouldShowDialog = !isActive && info?.trialUsed == true && !trialExpiredShown
+
+            if (shouldShowDialog) {
+                _trialExpired.value = true
+                trialExpiredShown = true
+            }
+        }
+    }
+
+    fun hideTrialDialog() {
+        _trialExpired.value = false
     }
 }

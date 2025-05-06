@@ -48,7 +48,6 @@ object Dialogs {
         )
     }
 
-    //TODO: kde a jak pouzit? pouzit? smazat?
     @Composable
     fun TrialExpiredDialog(
         onDismiss: () -> Unit,
@@ -57,13 +56,15 @@ object Dialogs {
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text("Zkušební doba skončila")
-            },
-            text = {
-                Text("Vaše bezplatná zkušební doba vypršela. Pokud chcete nadále používat prémiové funkce, zakupte si předplatné.")
+                Text("Prémiový přístup vypršel")
             },
             confirmButton = {
-                Button(onClick = onGoToSubscription) {
+                Button(
+                    onClick = onGoToSubscription,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
                     Text("Zobrazit předplatné")
                 }
             },

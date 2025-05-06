@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
+import cz.cvut.fit.chlumant.mon3tize.components.Dialogs
 
 
 @Composable
@@ -27,11 +28,25 @@ fun MainScreen(navController: NavHostController) {
 fun RockPaperScissorsGame(navController: NavHostController) {
     val viewModel: FreemiumViewModel = viewModel()
     var hasPremiumAccess by remember { mutableStateOf(false) }
+    val trialExpired by viewModel.trialExpired.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.checkPremiumAccess { result ->
             hasPremiumAccess = result
         }
+        viewModel.checkTrialStatus()
+    }
+
+    if (trialExpired) {
+        Dialogs.TrialExpiredDialog(
+            onDismiss = {
+                viewModel.hideTrialDialog()
+            },
+            onGoToSubscription = {
+                viewModel.hideTrialDialog()
+                navController.navigate("subscription")
+            }
+        )
     }
 
     var playerChoice by remember { mutableStateOf<String?>(null) }

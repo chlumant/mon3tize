@@ -2,6 +2,7 @@ package cz.cvut.fit.chlumant.demoApp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys.AdMob.subscription_5_minutes
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +42,7 @@ class FreemiumViewModel : ViewModel() {
     fun checkPremiumAccess(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val result = Mon3tize.isPremiumAccessAvailable(
-                subscriptionProductId = "subscription_test_01"
+                subscriptionProductId = subscription_5_minutes
             )
             onResult(result)
         }

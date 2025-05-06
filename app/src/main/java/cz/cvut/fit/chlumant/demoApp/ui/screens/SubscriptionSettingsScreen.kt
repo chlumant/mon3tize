@@ -18,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys.AdMob.subscription_5_minutes
 
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
@@ -53,7 +54,8 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
                 true -> {
                     Text("Máte aktivní předplatné nebo freemium.")
                     Button(onClick = {
-                        Mon3tize.billing.openSubscriptionManagement(context, "subscription_test_01") },
+//                        TODO: idk ten userkey jestli mit takhle nebo jinak
+                        Mon3tize.billing.openSubscriptionManagement(context, subscription_5_minutes) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)) {

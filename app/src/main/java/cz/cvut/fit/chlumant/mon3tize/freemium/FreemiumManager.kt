@@ -85,7 +85,7 @@ internal class FreemiumManager(
         )
     }
 
-    //TODO; jak checkovat to uplynuti trialu v aplikaci
+    //TODO; jak checkovat to uplynuti trialu v aplikaci + zavolat tu dialog
     override suspend fun isFreemiumCurrentlyActive(): Boolean {
         if (configuration is Mon3tizeConfiguration.Freemium.Disabled) return false
         val info = getFreemiumInfo() ?: return false

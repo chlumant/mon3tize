@@ -3,6 +3,7 @@ package cz.cvut.fit.chlumant.demoApp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys.AdMob.subscription_5_minutes
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -27,7 +28,7 @@ class PaymentViewModel : ViewModel() {
             _screenStateStream.value = ScreenState.Loading
             coroutineScope {
                 val subscriptionProductDetail = async {
-                    Mon3tize.billing.getSubscriptionDetails("subscription_test_01")
+                    Mon3tize.billing.getSubscriptionDetails(subscription_5_minutes)
                 }
                 val oneTimeProductDetail = async {
                     Mon3tize.billing.getOneTimeProductDetails("remove_ads_test_01")

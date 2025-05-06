@@ -58,7 +58,7 @@ fun PaymentScreen(navController: NavHostController) {
                         coroutineScope.launch {
                             Mon3tize.ads.showRewarded(
                                 activity = activity,
-                                adUnitId = UserKeys.AdMob.INTERSTITIAL_DEMO,
+                                adUnitId = UserKeys.AdMob.REWARDED_DEMO,
                                 onRewarded = {},
                                 onClose = {32},
                                 onError = {

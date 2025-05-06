@@ -2,7 +2,7 @@ package cz.cvut.fit.chlumant.mon3tize.freemium
 
 import kotlin.time.Duration
 
-interface FreemiumActions {
+public interface FreemiumActions {
 
     val auth: FirebaseAuthActions
 

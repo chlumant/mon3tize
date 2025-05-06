@@ -3,7 +3,7 @@ package cz.cvut.fit.chlumant.mon3tize.adManagers
 import android.app.Activity
 import android.content.Context
 
-class AdManager(context: Context) : AdActions {
+internal class AdManager(context: Context) : AdActions {
 
     private val interstitialAdManager = InterstitialAdManager(context)
     private val rewardedAdManager = RewardedAdManager(context)

@@ -11,28 +11,28 @@ import cz.cvut.fit.chlumant.mon3tize.billing.PurchaseListener
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumActions
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumManager
 
-object Mon3tize {
+public object Mon3tize {
 
     private var configuration: Mon3tizeConfiguration? = null
 
     @SuppressLint("StaticFieldLeak")
     private lateinit var freemiumManager: FreemiumManager
 
-    val freemium: FreemiumActions get() = freemiumManager
+    public val freemium: FreemiumActions get() = freemiumManager
 
     @SuppressLint("StaticFieldLeak")
     private lateinit var billingManager: BillingManager
 
-    val billing: BillingActions get() = billingManager
+    public val billing: BillingActions get() = billingManager
 
     @SuppressLint("StaticFieldLeak")
     private lateinit var adManager: AdManager
 
-    val ads: AdActions get() = adManager
+    public val ads: AdActions get() = adManager
 
     internal val logLevel: Mon3tizeConfiguration.LogLevel? get() = this.configuration?.logLevel
 
-    fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
+    public fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
 
         this.billingManager = BillingManager(

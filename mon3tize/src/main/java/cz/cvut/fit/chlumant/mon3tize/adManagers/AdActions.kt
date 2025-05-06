@@ -2,9 +2,9 @@ package cz.cvut.fit.chlumant.mon3tize.adManagers
 
 import android.app.Activity
 
-interface AdActions {
+public interface AdActions {
 
-    suspend fun showInterstitial(
+    public suspend fun showInterstitial(
         activity: Activity,
         adUnitId: String,
         onClose: () -> Unit,

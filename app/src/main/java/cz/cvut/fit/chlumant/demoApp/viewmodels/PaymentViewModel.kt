@@ -3,48 +3,63 @@ package cz.cvut.fit.chlumant.demoApp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+import cz.cvut.fit.chlumant.mon3tize.adManagers.AdReward
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.days
 
 class PaymentViewModel : ViewModel() {
-
 
     private val _screenStateStream = MutableStateFlow<ScreenState>(ScreenState.Loading)
     val screenStateStream = _screenStateStream.asStateFlow()
 
     init {
+        loadProducts()
+    }
+
+    fun loadProducts() {
         viewModelScope.launch {
-            loadProducts()
-        }
-    }
-
-    private suspend fun loadProducts() {
-        try {
-            _screenStateStream.value = ScreenState.Loading
-            coroutineScope {
-                val subscriptionProductDetail = async {
-                    Mon3tize.billing.getSubscriptionDetails("subscription_test_01")
+            try {
+                _screenStateStream.value = ScreenState.Loading
+                coroutineScope {
+                    val subscriptionProductDetail = async {
+                        Mon3tize.billing.getSubscriptionDetails(UserKeys.Billing.SUBSCRIPTION_PRODUCT_ID)
+                    }
+                    val oneTimeProductDetail = async {
+                        Mon3tize.billing.getOneTimeProductDetails(UserKeys.Billing.ONE_TIME_PRODUCT_ID)
+                    }
+                    _screenStateStream.value = ScreenState.Loaded(
+                        subscription = subscriptionProductDetail.await(),
+                        oneTimeProduct = oneTimeProductDetail.await(),
+                    )
                 }
-                val oneTimeProductDetail = async {
-                    Mon3tize.billing.getOneTimeProductDetails("remove_ads_test_01")
-                }
-                _screenStateStream.value = ScreenState.Loaded(
-                    subscription = subscriptionProductDetail.await(),
-                    oneTimeProduct = oneTimeProductDetail.await(),
-                )
+            } catch (e: Throwable) {
+                _screenStateStream.value = ScreenState.Error(e)
             }
-        } catch (e: Throwable) {
-            _screenStateStream.value = ScreenState.Error(e)
         }
     }
 
-//    TODO: kdyz je to takhle implementovany, tak muzu mit ve viewmodelu max jeden One-time a jeden Subscription?
-//    v tom loaded mit nejaky listy nebo tak neco? idk
+    fun handleReward(reward: AdReward) {
+        viewModelScope.launch {
+            try {
+                if (reward.type == UserKeys.Freemium.REWORD_TYPE) {
+                    Mon3tize.freemium.extendFreemiumBy(reward.amount.days)
+                }
+            } catch (e: Exception) {
+                _screenStateStream.update { it.asLoaded()?.copy(rewardError = e) ?: it }
+            }
+        }
+    }
+
     sealed interface ScreenState {
+
+        fun asLoaded() = this as? Loaded
 
         data object Loading : ScreenState
 
@@ -53,6 +68,7 @@ class PaymentViewModel : ViewModel() {
         data class Loaded(
             val subscription: ProductDetails,
             val oneTimeProduct: ProductDetails,
+            val rewardError: Throwable? = null,
         ) : ScreenState
     }
 }

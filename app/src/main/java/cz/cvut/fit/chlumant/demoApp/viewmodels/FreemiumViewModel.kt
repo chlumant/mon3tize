@@ -2,31 +2,46 @@ package cz.cvut.fit.chlumant.demoApp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys.Billing.SUBSCRIPTION_PRODUCT_ID
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class FreemiumViewModel : ViewModel() {
 
-    private val manager = Mon3tize.freemiumManager
+    private val _isFreemiumActive = MutableStateFlow(false)
+    val isFreemiumActive: StateFlow<Boolean> = _isFreemiumActive
 
-    val isFreemiumActive = manager.isFreemiumActive
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    private val _trialExpired = MutableStateFlow(false)
+    val trialExpired: StateFlow<Boolean> = _trialExpired
+    private var trialExpiredShown = false
 
     private val _showTrialUsedDialog = MutableStateFlow(false)
     val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
+
+    init {
+        syncFreemiumStatus()
+    }
+
+    private fun syncFreemiumStatus() {
+        viewModelScope.launch {
+            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
+            _isFreemiumActive.value = active
+        }
+    }
 
     fun startTrial(
         onNeedSignIn: () -> Unit,
         onActivated: () -> Unit
     ) {
         viewModelScope.launch {
-            manager.enableFreemium(
+            Mon3tize.freemium.enableFreemium(
                 onNeedSignIn = onNeedSignIn,
-                onActivated = onActivated,
+                onActivated = {
+                    syncFreemiumStatus()
+                    onActivated()
+                },
                 onAlreadyUsed = {
                     _showTrialUsedDialog.value = true
                 }
@@ -34,13 +49,20 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
-//  TODO: tahle hardcoded vec se mi moc nelibi
+    //  TODO: tahle hardcoded vec se mi moc nelibi (ID)
     fun checkPremiumAccess(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val result = Mon3tize.freemiumManager.isPremiumAccessAvailable(
-                subscriptionProductId = "subscription_test_01"
+            val result = Mon3tize.isPremiumAccessAvailable(
+                subscriptionProductId = SUBSCRIPTION_PRODUCT_ID
             )
             onResult(result)
+        }
+    }
+
+    fun refreshFreemiumStatus() {
+        viewModelScope.launch {
+            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
+            _isFreemiumActive.value = active
         }
     }
 
@@ -50,13 +72,28 @@ class FreemiumViewModel : ViewModel() {
 
     fun disableFreemium() {
         viewModelScope.launch {
-            manager.disableFreemium()
+            Mon3tize.freemium.disableFreemium()
+            syncFreemiumStatus()
         }
     }
 
-    fun syncFromCloud() {
+    //TODO: nemel bych pro uplynuti predplatnyho mit nejakej podobnej booelan jako trialUsed
+    //TODO: !isActive && (info?.trialUsed == true || subscriptionExpired) && !trialExpiredShown
+    fun checkTrialStatus() {
         viewModelScope.launch {
-            manager.synchronizeWithFirebase()
+            val isActive = Mon3tize.isPremiumAccessAvailable(SUBSCRIPTION_PRODUCT_ID)
+            val info = Mon3tize.freemium.getFreemiumInfo()
+
+            val shouldShowDialog = !isActive && info?.trialUsed == true && !trialExpiredShown
+
+            if (shouldShowDialog) {
+                _trialExpired.value = true
+                trialExpiredShown = true
+            }
         }
+    }
+
+    fun hideTrialDialog() {
+        _trialExpired.value = false
     }
 }

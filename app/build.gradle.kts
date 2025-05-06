@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "cz.cvut.fit.chlumant.demoApp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "cz.cvut.fit.chlumant.demoApp"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 9
         versionName = "1.0.8"
 
@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":mon3tize"))
     implementation(libs.navigation.compose)
     implementation(libs.datastore)
     implementation(libs.billing)

@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "demoApp"
 include(":app")
+include(":mon3tize")
  

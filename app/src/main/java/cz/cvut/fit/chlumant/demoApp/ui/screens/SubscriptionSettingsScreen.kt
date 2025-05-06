@@ -5,20 +5,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.sp
-
+import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys.Billing.SUBSCRIPTION_PRODUCT_ID
 import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 
@@ -52,11 +57,15 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
                 null -> CircularProgressIndicator()
                 true -> {
                     Text("Máte aktivní předplatné nebo freemium.")
-                    Button(onClick = {
-                        Mon3tize.billingManager.openSubscriptionManagement(context, "subscription_test_01") },
+                    Button(
+                        onClick = {
+//                        TODO: idk ten userkey jestli mit takhle nebo jinak
+                            Mon3tize.billing.openSubscriptionManagement(context, SUBSCRIPTION_PRODUCT_ID)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)) {
+                            .padding(16.dp)
+                    ) {
                         Text("Zrušit / upravit předplatné")
                     }
                 }

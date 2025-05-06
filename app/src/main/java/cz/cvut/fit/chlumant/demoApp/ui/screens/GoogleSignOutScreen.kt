@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import cz.cvut.fit.chlumant.mon3tize.AuthManager
+import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,8 +34,8 @@ fun SignOutScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        AuthManager.signOut()
-                        navController.navigate("signin") {
+                        Mon3tize.freemium.auth.signOut()
+                        navController.navigate("home") {
                             popUpTo("home") { inclusive = true }
                         }
                     }

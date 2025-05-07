@@ -47,7 +47,7 @@ fun SignInScreen(
                 navController.popBackStack()
             },
             onError = {
-                showToast(context, "Přihlášení selhalo. Zkuste to prosím znovu.")
+                showToast(context, "Log in failed.")
             }
         )
     }
@@ -59,7 +59,8 @@ fun SignInScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Přihlášení do aplikace", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+        //TODO: je potreba?
+//        Text("Přihlášení do aplikace", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -67,7 +68,7 @@ fun SignInScreen(
             val signInIntent = signInClient.signInIntent
             launcher.launch(signInIntent)
         }) {
-            Text("Přihlásit se Google účtem")
+            Text("Sign In With Google")
         }
     }
 }

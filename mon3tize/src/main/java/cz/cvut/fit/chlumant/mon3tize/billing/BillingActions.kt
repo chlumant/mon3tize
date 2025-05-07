@@ -5,31 +5,31 @@ import android.content.Context
 import com.android.billingclient.api.ProductDetails
 import cz.cvut.fit.chlumant.mon3tize.util.Result
 
-interface BillingActions {
-    suspend fun isSubscriptionActive(productId: String): Boolean
+public interface BillingActions {
+    public suspend fun isSubscriptionActive(productId: String): Boolean
 
-    suspend fun isOneTimeProductOwned(productId: String): Boolean
+    public suspend fun isOneTimeProductOwned(productId: String): Boolean
 
-    suspend fun getSubscriptionDetails(productId: String): ProductDetails
+    public suspend fun getSubscriptionDetails(productId: String): ProductDetails
 
-    suspend fun getOneTimeProductDetails(productId: String): ProductDetails
+    public suspend fun getOneTimeProductDetails(productId: String): ProductDetails
 
-    fun launchSubscriptionPurchaseFlow(
+    public fun launchSubscriptionPurchaseFlow(
         activity: Activity,
         productDetails: ProductDetails
     )
 
-    fun launchInAppPurchaseFlow(
+    public fun launchInAppPurchaseFlow(
         activity: Activity,
         productDetails: ProductDetails
     )
 
-    fun openSubscriptionManagement(
+    public fun openSubscriptionManagement(
         context: Context,
         productId: String
     ): Result<Unit>
 
-    fun endConnection()
+    public fun endConnection()
 }
 
 

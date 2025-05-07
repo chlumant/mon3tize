@@ -4,7 +4,7 @@ import android.util.Log
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import cz.cvut.fit.chlumant.mon3tize.Mon3tizeConfiguration
 
-object Mon3tizeLogger {
+internal object Mon3tizeLogger {
 
     fun e(tag: String, message: String, exception: Throwable? = null) {
         if (Mon3tize.logLevel == Mon3tizeConfiguration.LogLevel.ERROR || Mon3tize.logLevel == Mon3tizeConfiguration.LogLevel.ALL) {

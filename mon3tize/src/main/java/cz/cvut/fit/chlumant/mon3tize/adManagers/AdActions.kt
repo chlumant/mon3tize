@@ -11,12 +11,12 @@ public interface AdActions {
         onError: (Throwable) -> Unit,
     )
 
-    suspend fun preloadInterstitial(
+    public suspend fun preloadInterstitial(
         adUnitId: String,
         onError: (Throwable) -> Unit,
     )
 
-    suspend fun showRewarded(
+    public suspend fun showRewarded(
         activity: Activity,
         adUnitId: String,
         onRewardEarn: (AdReward) -> Unit,
@@ -24,7 +24,7 @@ public interface AdActions {
         onError: (Throwable) -> Unit,
     )
 
-    suspend fun preloadRewarded(
+    public suspend fun preloadRewarded(
         adUnitId: String,
         onError: (Throwable) -> Unit,
     )

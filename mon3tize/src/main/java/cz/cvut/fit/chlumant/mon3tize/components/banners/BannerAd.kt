@@ -8,7 +8,7 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 
 @Composable
-fun AdBanner(
+public fun AdBanner(
     adUnitId: String,
     bannerType: BannerType,
     modifier: Modifier = Modifier

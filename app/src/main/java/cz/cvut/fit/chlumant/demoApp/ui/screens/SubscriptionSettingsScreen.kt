@@ -51,12 +51,12 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Správa předplatného", fontSize = 22.sp)
+            Text("Subscription Management", fontSize = 22.sp)
 
             when (isActive) {
                 null -> CircularProgressIndicator()
                 true -> {
-                    Text("Máte aktivní předplatné nebo freemium.")
+                    Text("You have an active subscription or a free trial.")
                     Button(
                         onClick = {
 //                        TODO: idk ten userkey jestli mit takhle nebo jinak
@@ -66,16 +66,16 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Text("Zrušit / upravit předplatné")
+                        Text("Cancel Subscription")
                     }
                 }
                 false -> {
-                    Text("Nemáte aktivní předplatné.")
-                    NavigationButton(navController, "Zakoupit Předplatné", "payment")
+                    Text("You have no active subscriptions.")
+                    NavigationButton(navController, "Buy Subscription", "payment")
                 }
             }
-            NavigationButton(navController, "Odhlásit se", "signout")
-            NavigationButton(navController, "Zpět", "home")
+            NavigationButton(navController, "Sign Out", "signout")
+            NavigationButton(navController, "Back To Home Screen", "home")
         }
     }
 }

@@ -4,8 +4,7 @@ package cz.cvut.fit.chlumant.mon3tize.components.banners
  * Enum reprezentující typy bannerových reklam dostupné přes Google Mobile Ads SDK.>
  * Používej v kombinaci s funkcí AdBanner() pro jednodušší a bezpečný výběr velikosti reklamy.
  */
-enum class BannerType() {
-
+public enum class BannerType() {
     Banner(),                     // 320x50 px
     LargeBanner(),          // 320x100 px
     MediumRectangle(),  // 300x250 px

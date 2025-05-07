@@ -14,13 +14,13 @@ import cz.cvut.fit.chlumant.mon3tize.util.resumeIfActive
 import cz.cvut.fit.chlumant.mon3tize.util.resumeWithExceptionIfActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-class RewardedAdManager(private val context: Context) {
+public class RewardedAdManager(private val context: Context) {
 
-    var preloadedAd: PreloadedAd? = null
+    private var preloadedAd: PreloadedAd? = null
 
-    data class PreloadedAd(val ad: RewardedAd, val adUnitId: String)
+    private data class PreloadedAd(val ad: RewardedAd, val adUnitId: String)
 
-    suspend fun preload(adUnitId: String, onError: (Throwable) -> Unit) {
+    public suspend fun preload(adUnitId: String, onError: (Throwable) -> Unit) {
         try {
             preloadedAd = PreloadedAd(loadAd(adUnitId), adUnitId)
         } catch (e: Exception) {
@@ -28,7 +28,7 @@ class RewardedAdManager(private val context: Context) {
         }
     }
 
-    private suspend fun loadAd(adUnitId: String): RewardedAd {
+    public suspend fun loadAd(adUnitId: String): RewardedAd {
         return suspendCancellableCoroutine { continuation ->
             val adRequest = AdRequest.Builder().build()
             RewardedAd.load(context, adUnitId, adRequest, object : RewardedAdLoadCallback() {
@@ -60,7 +60,7 @@ class RewardedAdManager(private val context: Context) {
         }
     }
 
-    suspend fun showAd(
+    public suspend fun showAd(
         activity: Activity,
         adUnitId: String,
         onRewardEarned: (AdReward) -> Unit,

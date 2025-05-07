@@ -21,15 +21,15 @@ class FreemiumViewModel : ViewModel() {
     val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
 
     init {
-        syncFreemiumStatus()
+//        syncFreemiumStatus()
     }
 
-    private fun syncFreemiumStatus() {
-        viewModelScope.launch {
-            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
-            _isFreemiumActive.value = active
-        }
-    }
+//    private fun syncFreemiumStatus() {
+//        viewModelScope.launch {
+//            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
+//            _isFreemiumActive.value = active
+//        }
+//    }
 
     fun startTrial(
         onNeedSignIn: () -> Unit,
@@ -39,7 +39,7 @@ class FreemiumViewModel : ViewModel() {
             Mon3tize.freemium.enableFreemium(
                 onNeedSignIn = onNeedSignIn,
                 onActivated = {
-                    syncFreemiumStatus()
+//                    syncFreemiumStatus()
                     onActivated()
                 },
                 onAlreadyUsed = {
@@ -73,7 +73,7 @@ class FreemiumViewModel : ViewModel() {
     fun disableFreemium() {
         viewModelScope.launch {
             Mon3tize.freemium.disableFreemium()
-            syncFreemiumStatus()
+//            syncFreemiumStatus()
         }
     }
 

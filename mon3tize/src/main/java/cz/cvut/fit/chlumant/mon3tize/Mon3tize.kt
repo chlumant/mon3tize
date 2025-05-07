@@ -46,7 +46,7 @@ public object Mon3tize {
         FirebaseApp.initializeApp(context)
     }
 
-    suspend fun isPremiumAccessAvailable(subscriptionProductId: String): Boolean {
+    public suspend fun isPremiumAccessAvailable(subscriptionProductId: String): Boolean {
 
         val hasActiveSubscription = billing.isSubscriptionActive(subscriptionProductId)
 

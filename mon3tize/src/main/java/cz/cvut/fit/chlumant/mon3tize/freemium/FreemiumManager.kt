@@ -1,5 +1,6 @@
 package cz.cvut.fit.chlumant.mon3tize.freemium
 
+import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -70,6 +71,7 @@ internal class FreemiumManager(
             expiresAt = expiresAt,
             trialUsed = true
         )
+        Log.d("FreemiumManager", "enableFreemium: $info")
         saveFreemiumInfo(info)
 
         onActivated()
@@ -87,22 +89,31 @@ internal class FreemiumManager(
         )
     }
 
+    //TODO: spatne vraci freemium info
     override suspend fun isFreemiumCurrentlyActive(): Boolean {
-        if (configuration is Mon3tizeConfiguration.Freemium.Disabled) return false
+        if (configuration is Mon3tizeConfiguration.Freemium.Disabled){
+            Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 1")
+            return false
+        }
+        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 2")
         val info = getFreemiumInfo() ?: return false
+        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: $info")
         val now = System.currentTimeMillis()
 
         if (info.isActive && now > info.expiresAt) {
             saveFreemiumInfo(
                 FreemiumInfo(
                     isActive = false,
-                    activatedAt = info.activatedAt,
+                    activatedAt = 11,
+                        //info.activatedAt,
                     expiresAt = info.expiresAt,
                     trialUsed = true
                 )
             )
+            Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 3")
             return false
         }
+        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 4")
         return info.isActive
     }
 

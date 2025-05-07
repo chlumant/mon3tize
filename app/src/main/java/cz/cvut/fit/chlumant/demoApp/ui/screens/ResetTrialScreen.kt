@@ -36,7 +36,7 @@ fun ResetTrialScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text(text = "Resetovat zkušební dobu")
+                Text(text = "Reset Free Trial")
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -49,7 +49,7 @@ fun ResetTrialScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text(text = "Zpět na domovskou obrazovku")
+                Text(text = "Back To Home Screen")
             }
         }
     }

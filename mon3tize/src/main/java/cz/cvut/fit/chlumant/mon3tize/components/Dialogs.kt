@@ -10,20 +10,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-object Dialogs {
+public object Dialogs {
     @Composable
-    fun TrialAlreadyUsedDialog(
+    public fun TrialAlreadyUsedDialog(
         onDismiss: () -> Unit,
         onGoToSubscription: () -> Unit
     ) {
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text(text = "Zkušební doba již byla vyčerpána")
+                Text(text = "Free Trial Already Used")
             },
             text = {
-                Text(text = "Již jste využili svou bezplatnou zkušební dobu." +
-                        " Zakoupením předplatného získáte plný přístup.")
+                Text(text = "You have already used your free trial." +
+                        " Gain access by buying a premium subscription.")
             },
             confirmButton = {
                 Button(
@@ -32,7 +32,7 @@ object Dialogs {
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 ) {
-                    Text("Zakoupit předplatné")
+                    Text("Buy Subscription")
                 }
             },
             dismissButton = {
@@ -42,21 +42,21 @@ object Dialogs {
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 ) {
-                    Text("Zrušit")
+                    Text("Cancel")
                 }
             }
         )
     }
 
     @Composable
-    fun TrialExpiredDialog(
+    public fun TrialExpiredDialog(
         onDismiss: () -> Unit,
         onGoToSubscription: () -> Unit
     ) {
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text("Prémiový přístup vypršel")
+                Text("Free Trial Expired")
             },
             confirmButton = {
                 Button(
@@ -65,7 +65,7 @@ object Dialogs {
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 ) {
-                    Text("Zobrazit předplatné")
+                    Text("Buy Subscription")
                 }
             },
             dismissButton = {
@@ -75,7 +75,7 @@ object Dialogs {
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 ) {
-                    Text("Zrušit")
+                    Text("Cancel")
                 }
             }
         )

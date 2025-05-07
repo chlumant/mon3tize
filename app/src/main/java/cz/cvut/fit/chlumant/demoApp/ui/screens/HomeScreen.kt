@@ -91,8 +91,8 @@ fun HomeScreen(navController: NavHostController) {
             ) {
                 Text("Go to Freemium Screen but with Ad")
             }
-            NavigationButton(navController, "Resetovat Zkušební Dobu", "resettrial")
-            NavigationButton(navController, "Nastavení Předplatného", "subscriptionsettings")
+            NavigationButton(navController, "Reset Free Trial", "resettrial")
+            NavigationButton(navController, "Subscription Management", "subscriptionsettings")
         }
     }
 }

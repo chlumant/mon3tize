@@ -31,8 +31,6 @@ fun FreemiumActiveScreen(navController: NavHostController) {
                     .padding(16.dp)
             )
             NavigationButton(navController, "Continue to App", "home")
-
-            NavigationButton(navController, "prihlasit", "signin")
         }
     }
 }

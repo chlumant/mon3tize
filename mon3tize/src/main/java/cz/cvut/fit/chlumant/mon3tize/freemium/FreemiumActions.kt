@@ -4,25 +4,26 @@ import kotlin.time.Duration
 
 public interface FreemiumActions {
 
-    val auth: FirebaseAuthActions
+    public val auth: FirebaseAuthActions
 
-    suspend fun canActivateTrial(): Boolean
+    public suspend fun canActivateTrial(): Boolean
 
-    suspend fun enableFreemium(
+    public suspend fun enableFreemium(
         onNeedSignIn: () -> Unit,
         onActivated: () -> Unit,
         onAlreadyUsed: () -> Unit
     )
 
-    suspend fun disableFreemium()
+    public suspend fun disableFreemium()
 
-    suspend fun isFreemiumCurrentlyActive(): Boolean
+    public suspend fun isFreemiumCurrentlyActive(): Boolean
 
-    suspend fun getFreemiumInfo(): FreemiumInfo?
+    //TODO: FreemiumInfo by mozna mohlo byt internal, ale nemohl bych pak volat FreemiumViewModel.checkTrialStatus
+    public suspend fun getFreemiumInfo(): FreemiumInfo?
 
-    suspend fun resetTrialUsed()
+    public suspend fun resetTrialUsed()
 
-    suspend fun extendFreemiumBy(duration: Duration)
+    public suspend fun extendFreemiumBy(duration: Duration)
 
-    suspend fun shortenFreemiumBy(duration: Duration)
+    public suspend fun shortenFreemiumBy(duration: Duration)
 }

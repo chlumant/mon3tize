@@ -27,7 +27,7 @@ internal object AuthManager : FirebaseAuthActions {
                     val uid = auth.currentUser?.uid
                     onResult(true, uid)
                 } else {
-                    Mon3tizeLogger.e("AuthManager", "Přihlášení selhalo: ${task.exception?.message}")
+                    Mon3tizeLogger.e("AuthManager", "Log In Failed: ${task.exception?.message}")
                     onResult(false, null)
                 }
             }
@@ -35,7 +35,7 @@ internal object AuthManager : FirebaseAuthActions {
 
     override fun signOut() {
         auth.signOut()
-        Mon3tizeLogger.d("AuthManager", "Uživatel byl odhlášen.")
+        Mon3tizeLogger.d("AuthManager", "User Signed Out.")
     }
 
     fun getCurrentUser(): FirebaseUser? {

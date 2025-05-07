@@ -30,7 +30,7 @@ fun FreemiumScreen(navController: NavHostController) {
         ) {
             if (!isFreemiumActive) {
                 Text(
-                    text = "Chceš aktivovat zkušební dobu zdarma?",
+                    text = "Do you want to activate free trial?",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
@@ -44,22 +44,23 @@ fun FreemiumScreen(navController: NavHostController) {
                         viewModel.startTrial(
                             onNeedSignIn = { navController.navigate("signin") },
                             onActivated = {
-                                navController.navigate("home") {
+                                //TODO: prozkoumat
+                                navController.navigate("freemiumYes") {
                                     popUpTo("freemium") { inclusive = true }
                                 }
                             }
                         )
                     }
                 ) {
-                    Text("Ano, aktivovat")
+                    Text("Activate")
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                NavigationButton(navController, "Ne, pokračovat bez freemia", "home")
+                NavigationButton(navController, "Dismiss", "home")
             } else {
                 Text(
-                    text = "Freemium je aktivní.",
+                    text = "Free trial already active.",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
@@ -76,11 +77,11 @@ fun FreemiumScreen(navController: NavHostController) {
                         }
                     }
                 ) {
-                    Text("Zrušit freemium")
+                    Text("Cancel Free Trial")
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-                NavigationButton(navController, "Zpět na domovskou obrazovku", "home")
+                NavigationButton(navController, "Back To Home Screen", "home")
             }
         }
     }

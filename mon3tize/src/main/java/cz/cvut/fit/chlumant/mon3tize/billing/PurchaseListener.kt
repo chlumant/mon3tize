@@ -11,7 +11,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
 
 @Suppress("DEPRECATION")
-class PurchaseListener(private val context: Context) : PurchasesUpdatedListener {
+internal class PurchaseListener(private val context: Context) : PurchasesUpdatedListener {
 
     override fun onPurchasesUpdated(
         billingResult: BillingResult,
@@ -63,7 +63,7 @@ class PurchaseListener(private val context: Context) : PurchasesUpdatedListener 
         })
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "PurchaseListener"
     }
 }

@@ -53,8 +53,9 @@ fun PaymentScreen(navController: NavHostController) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
+            //TODO: predelat logiku?
             Text(
-                text = "Vyberte, co chcete zakoupit",
+                text = "Select Product",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -111,7 +112,7 @@ fun PaymentScreen(navController: NavHostController) {
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Text("Koupit Předplatné")
+                        Text("Purchase Subscription")
                     }
 
                     Button(
@@ -124,7 +125,8 @@ fun PaymentScreen(navController: NavHostController) {
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Text("Jednorázový nákup")
+                        //TODO: taky dost divny ne
+                        Text("One-Time Purchase")
                     }
                 }
 
@@ -133,7 +135,7 @@ fun PaymentScreen(navController: NavHostController) {
                 }
             }
 
-            NavigationButton(navController, "Zpět na Home", "home")
+            NavigationButton(navController, "Back To Home Screen", "home")
         }
     }
 }

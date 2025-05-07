@@ -44,7 +44,7 @@ fun RockPaperScissorsGame(navController: NavHostController) {
             },
             onGoToSubscription = {
                 viewModel.hideTrialDialog()
-                navController.navigate("subscription")
+                navController.navigate("payment")
             }
         )
     }
@@ -53,18 +53,18 @@ fun RockPaperScissorsGame(navController: NavHostController) {
     var computerChoice by remember { mutableStateOf<String?>(null) }
     var result by remember { mutableStateOf<String?>(null) }
 
-    val choices = listOf("Kámen", "Nůžky", "Papír")
+    val choices = listOf("Rock", "Scissors", "Paper")
 
     fun playGame(choice: String) {
         playerChoice = choice
         computerChoice = choices[Random.nextInt(choices.size)]
 
         result = when {
-            playerChoice == computerChoice -> "Remíza!"
-            (playerChoice == "Kámen" && computerChoice == "Nůžky") ||
-                    (playerChoice == "Nůžky" && computerChoice == "Papír") ||
-                    (playerChoice == "Papír" && computerChoice == "Kámen") -> "Vyhrál jsi!"
-            else -> "Prohrál jsi!"
+            playerChoice == computerChoice -> "Draw!"
+            (playerChoice == "Rock" && computerChoice == "Scissors") ||
+                    (playerChoice == "Scissors" && computerChoice == "Paper") ||
+                    (playerChoice == "Paper" && computerChoice == "Rock") -> "You Won!"
+            else -> "You Lost!"
         }
     }
 
@@ -75,7 +75,7 @@ fun RockPaperScissorsGame(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Vyber si tah", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(text = "Make Your Choice:", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -84,7 +84,7 @@ fun RockPaperScissorsGame(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             choices.forEach { choice ->
-                val isEnabled = choice != "Papír" || hasPremiumAccess
+                val isEnabled = choice != "Paper" || hasPremiumAccess
 
                 Button(
                     onClick = { playGame(choice) },
@@ -103,7 +103,7 @@ fun RockPaperScissorsGame(navController: NavHostController) {
 
         if (!hasPremiumAccess) {
             Text(
-                text = "Pro výběr 'Papír' je potřeba aktivovat zkušební dobu nebo mít prémiový účet.",
+                text = "'Paper' is only available for premium users.",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 8.dp)
@@ -113,22 +113,22 @@ fun RockPaperScissorsGame(navController: NavHostController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         if (playerChoice != null && computerChoice != null) {
-            Text(text = "Tvoje volba: $playerChoice", fontSize = 20.sp)
-            Text(text = "Počítač zvolil: $computerChoice", fontSize = 20.sp)
+            Text(text = "Your Choice: $playerChoice", fontSize = 20.sp)
+            Text(text = "Computer's Choice: $computerChoice", fontSize = 20.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = result ?: "",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = when (result) {
-                    "Vyhrál jsi!" -> Color.Green
-                    "Prohrál jsi!" -> Color.Red
+                    "You Won!" -> Color.Green
+                    "You Lost!" -> Color.Red
                     else -> Color.Gray
                 }
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-        NavigationButton(navController, "Zpět na domovskou obrazovku", "home")
+        NavigationButton(navController, "Back To Home Screen", "home")
     }
 }

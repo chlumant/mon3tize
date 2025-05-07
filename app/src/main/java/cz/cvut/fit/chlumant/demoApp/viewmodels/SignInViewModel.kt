@@ -23,23 +23,23 @@ class SignInViewModel(application: Application) : AndroidViewModel(application) 
             val account: GoogleSignInAccount = task.getResult(Exception::class.java)!!
             val idToken = account.idToken
             if (idToken == null) {
-                Log.e("SignIn", "ID token je null.")
+                Log.e("SignIn", "ID token is null.")
                 onError(IllegalStateException("ID token is null"))
                 return
             }
 
             Mon3tize.freemium.auth.signInWithGoogleToken(idToken) { success, uid ->
                 if (success && uid != null) {
-                    Log.d("SignIn", "Přihlášení úspěšné: $uid")
+                    Log.d("SignIn", "Sign In Successful: $uid")
                     onSuccess(uid)
                 } else {
-                    Log.e("SignIn", "Firebase přihlášení selhalo")
+                    Log.e("SignIn", "Firebase Log In Failed")
                     onError(null)
                 }
             }
 
         } catch (e: Exception) {
-            Log.e("SignIn", "Google přihlášení selhalo", e)
+            Log.e("SignIn", "Google Log In Failed", e)
             onError(e)
         }
     }

@@ -14,13 +14,13 @@ import cz.cvut.fit.chlumant.mon3tize.util.resumeIfActive
 import cz.cvut.fit.chlumant.mon3tize.util.resumeWithExceptionIfActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-class InterstitialAdManager(private val context: Context) {
+public class InterstitialAdManager(private val context: Context) {
 
-    var preloadedAd: PreloadedAd? = null
+    private var preloadedAd: PreloadedAd? = null
 
-    data class PreloadedAd(val ad: InterstitialAd, val adUnitId: String)
+    private data class PreloadedAd(val ad: InterstitialAd, val adUnitId: String)
 
-    suspend fun preload(adUnitId: String, onError: (Throwable) -> Unit) {
+    public suspend fun preload(adUnitId: String, onError: (Throwable) -> Unit) {
         try {
             preloadedAd = PreloadedAd(loadAd(adUnitId), adUnitId)
         } catch (e: Exception) {
@@ -28,7 +28,7 @@ class InterstitialAdManager(private val context: Context) {
         }
     }
 
-    private suspend fun loadAd(adUnitId: String): InterstitialAd {
+    public suspend fun loadAd(adUnitId: String): InterstitialAd {
         return suspendCancellableCoroutine { continuation ->
             val adRequest = AdRequest.Builder().build()
             InterstitialAd.load(context, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
@@ -61,7 +61,7 @@ class InterstitialAdManager(private val context: Context) {
         }
     }
 
-    suspend fun showAd(activity: Activity, adUnitId: String, onAdClosed: () -> Unit, onError: (Throwable) -> Unit) {
+    public suspend fun showAd(activity: Activity, adUnitId: String, onAdClosed: () -> Unit, onError: (Throwable) -> Unit) {
         try {
             val ad = preloadedAd?.ad?.takeIf { it.adUnitId == adUnitId } ?: loadAd(adUnitId)
             ad.setCallback(onAdClosed, onError)

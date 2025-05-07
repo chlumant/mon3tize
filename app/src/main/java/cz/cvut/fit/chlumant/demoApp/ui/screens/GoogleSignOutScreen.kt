@@ -27,7 +27,7 @@ fun SignOutScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Opravdu se chcete odhlásit?", style = MaterialTheme.typography.headlineSmall)
+            Text("Do you want to sign out?", style = MaterialTheme.typography.headlineSmall)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -42,7 +42,7 @@ fun SignOutScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Odhlásit se")
+                Text("Sign Out")
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -53,7 +53,7 @@ fun SignOutScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Zrušit")
+                Text("Cancel")
             }
         }
     }

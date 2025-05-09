@@ -91,7 +91,7 @@ fun RockPaperScissorsGame(navController: NavHostController) {
                     enabled = isEnabled,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(8.dp)
+                        .padding(4.dp)
                 ) {
                     Text(
                         text = if (!isEnabled) "$choice 🔒" else choice,

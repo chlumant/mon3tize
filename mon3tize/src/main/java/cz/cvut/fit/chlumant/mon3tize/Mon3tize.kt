@@ -2,6 +2,7 @@ package cz.cvut.fit.chlumant.mon3tize
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import com.google.firebase.FirebaseApp
 import cz.cvut.fit.chlumant.mon3tize.adManagers.AdActions
 import cz.cvut.fit.chlumant.mon3tize.adManagers.AdManager
@@ -52,6 +53,7 @@ public object Mon3tize {
 
         if (configuration?.freemium is Mon3tizeConfiguration.Freemium.Enabled) {
             val hasActiveTrial = freemium.isFreemiumCurrentlyActive()
+            Log.d("Mon3tize", "isPremiumAccessAvailable: $hasActiveTrial")
             return hasActiveTrial || hasActiveSubscription
         } else {
             return hasActiveSubscription

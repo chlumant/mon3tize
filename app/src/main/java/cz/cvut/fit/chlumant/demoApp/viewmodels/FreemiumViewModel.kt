@@ -82,9 +82,9 @@ class FreemiumViewModel : ViewModel() {
     fun checkTrialStatus() {
         viewModelScope.launch {
             val isActive = Mon3tize.isPremiumAccessAvailable(SUBSCRIPTION_PRODUCT_ID)
-            val info = Mon3tize.freemium.getFreemiumInfo()
+            val trialUsed = Mon3tize.freemium.getTrialStatus()
 
-            val shouldShowDialog = !isActive && info?.trialUsed == true && !trialExpiredShown
+            val shouldShowDialog = !isActive && trialUsed == true && !trialExpiredShown
 
             if (shouldShowDialog) {
                 _trialExpired.value = true

@@ -115,7 +115,12 @@ internal class FreemiumManager(
         return info.active
     }
 
-    override suspend fun getFreemiumInfo(): FreemiumInfo? {
+    override suspend fun getTrialStatus(): Boolean {
+        val info = getFreemiumInfo() ?: return false
+        return info.trialUsed
+    }
+
+    private suspend fun getFreemiumInfo(): FreemiumInfo? {
         val user = firebaseAuth.currentUser ?: return null
         val doc = firestore.collection("users").document(user.uid).get().await()
         val data = doc.get("freemium") as? Map<*, *> ?: return null

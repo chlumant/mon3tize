@@ -32,7 +32,7 @@ internal class BillingManager(
         Mon3tizeLogger.d("BillingManager", "BillingClient built, version 7.1.1")
     }
 
-    @Suppress("DEPRECATION")
+
     private val billingClient: BillingClient = BillingClient.newBuilder(context)
         .setListener(listener)
         .enablePendingPurchases()

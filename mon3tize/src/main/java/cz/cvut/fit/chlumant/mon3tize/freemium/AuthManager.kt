@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+
 
 package cz.cvut.fit.chlumant.mon3tize.freemium
 

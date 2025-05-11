@@ -1,5 +1,7 @@
 package cz.cvut.fit.chlumant.demoApp.ui.screens
 
+import android.app.Application
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -12,18 +14,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.demoApp.ui.components.showToast
 import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
-import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+import cz.cvut.fit.chlumant.mon3tize.freemium.AuthDiagnostics
+import kotlinx.coroutines.launch
 
 @Composable
 fun SignInScreen(
@@ -31,25 +34,10 @@ fun SignInScreen(
     viewModel: SignInViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-    val webClientId = UserKeys.OAUTH_CLIENT_ID
-
-    val signInClient = remember {
-        Mon3tize.freemium.auth.getGoogleSignInClient(context, webClientId)
-    }
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        viewModel.handleSignInResult(
-            result,
-            onSuccess = { email ->
-                navController.popBackStack()
-            },
-            onError = {
-                showToast(context, "Log in failed.")
-            }
-        )
+    LaunchedEffect(Unit) {
+        AuthDiagnostics.diagnosticCheck(context)
     }
 
     Column(
@@ -59,14 +47,24 @@ fun SignInScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //TODO: je potreba?
-//        Text("Přihlášení do aplikace", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(onClick = {
-            val signInIntent = signInClient.signInIntent
-            launcher.launch(signInIntent)
+            Log.d("SignInScreen", "Sign-In Button Clicked")
+            scope.launch {
+                Log.d("SignInScreen", "Coroutine started")
+                viewModel.handleSignIn(
+                    context.applicationContext as Application,
+                    onSuccess = { uid ->
+                        Log.d("SignInScreen", "Sign In Success: $uid")
+                        navController.popBackStack()
+                    },
+                    onError = {
+                        Log.e("SignInScreen", "Sign In Failed: ${it?.message}")
+                        showToast(context, "Log in failed.")
+                    }
+                )
+            }
         }) {
             Text("Sign In With Google")
         }

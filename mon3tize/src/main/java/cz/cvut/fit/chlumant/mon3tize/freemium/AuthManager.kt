@@ -1,65 +1,124 @@
-
-
 package cz.cvut.fit.chlumant.mon3tize.freemium
 
 import android.content.Context
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import android.util.Log
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 internal object AuthManager : FirebaseAuthActions {
 
     private val auth: FirebaseAuth get() = FirebaseAuth.getInstance()
 
-    fun isUserSignedIn(): Boolean {
-        return auth.currentUser != null
+    private suspend fun getGoogleIdToken(context: Context): String? {
+        Log.d("AuthManager", "Starting getGoogleIdToken...")
+
+        val credentialManager = CredentialManager.create(context)
+        Log.d("AuthManager", "CredentialManager instance created.")
+
+        val signInWithGoogleOption = GetSignInWithGoogleOption
+            .Builder("68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com")
+            .build()
+
+        Log.d("AuthManager", "GetSignInWithGoogleOption configured.")
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(signInWithGoogleOption)
+            .build()
+
+        Log.d("AuthManager", "GetCredentialRequest built.")
+
+        return try {
+            val result: GetCredentialResponse = credentialManager.getCredential(context, request)
+            Log.d("AuthManager", "Credential response received: $result")
+
+            val credential = result.credential
+            Log.d("AuthManager", "Credential type: ${credential::class.simpleName}")
+
+            if (credential is GoogleIdTokenCredential) {
+                Log.d("AuthManager", "Google ID Token found.")
+                return credential.idToken
+            } else {
+                Log.e("AuthManager", "Unexpected credential type: ${credential::class.simpleName}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("AuthManager", "Error during Google Credential request: ${e.message}")
+            null
+        }
     }
 
-    override fun signInWithGoogleToken(idToken: String, onResult: (Boolean, String?) -> Unit) {
+    override suspend fun signInWithGoogle(context: Context, onResult: (Boolean, String?) -> Unit) {
+        try {
+            withContext(Dispatchers.IO) {
+                Log.d("AuthManager", "Starting signInWithGoogle...")
+
+                val idToken = getGoogleIdToken(context)
+                Log.d("AuthManager", "ID Token received: $idToken")
+
+                if (idToken != null) {
+                    firebaseAuthWithGoogle(idToken, onResult)
+                } else {
+                    Log.e("AuthManager", "ID Token is null.")
+                    withContext(Dispatchers.Main) {
+                        onResult(false, null)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("AuthManager", "Log In Failed: ${e.message}")
+            withContext(Dispatchers.Main) {
+                onResult(false, null)
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String, onResult: (Boolean, String?) -> Unit) {
+        Log.d("AuthManager", "Attempting Firebase sign-in with Google ID Token...")
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val uid = auth.currentUser?.uid
+                    Log.d("AuthManager", "User Signed In: $uid")
                     onResult(true, uid)
                 } else {
-                    Mon3tizeLogger.e("AuthManager", "Log In Failed: ${task.exception?.message}")
+                    Log.e("AuthManager", "Firebase Authentication Failed: ${task.exception?.message}")
                     onResult(false, null)
                 }
             }
     }
 
-    override fun signOut() {
-        auth.signOut()
-        Mon3tizeLogger.d("AuthManager", "User Signed Out.")
+    override fun isUserSignedIn(): Boolean {
+        return auth.currentUser != null
     }
 
-    fun getCurrentUser(): FirebaseUser? {
+    override fun signOut() {
+        auth.signOut()
+        Log.d("AuthManager", "User Signed Out.")
+    }
+
+    override fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
     }
 
-    fun getUid(): String? {
+    override fun getUid(): String? {
         return auth.currentUser?.uid
     }
 
-    fun getEmail(): String? {
+    override fun getEmail(): String? {
         return auth.currentUser?.email
     }
 
-    fun isAnonymous(): Boolean {
+    override fun isAnonymous(): Boolean {
         return auth.currentUser?.isAnonymous == true
-    }
-
-    override fun getGoogleSignInClient(context: Context, webClientId: String): GoogleSignInClient {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(webClientId)
-            .requestEmail()
-            .build()
-
-        return GoogleSignIn.getClient(context, gso)
     }
 }

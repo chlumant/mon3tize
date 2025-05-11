@@ -66,6 +66,7 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
+//    todo tohle se mi nejak nezda
     fun dismissTrialUsedDialog() {
         _showTrialUsedDialog.value = false
     }
@@ -93,6 +94,7 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
+    //    todo tohle se mi nejak nezda
     fun hideTrialDialog() {
         _trialExpired.value = false
     }

@@ -36,7 +36,6 @@ internal class FreemiumManager(
         saveFreemiumInfo(info)
     }
 
-    //TODO: nejsem si jistej jestli spravne pracuju s tim configem
     private fun getTrialDurationMillis(): Long {
         require(configuration is Mon3tizeConfiguration.Freemium.Enabled) {
             "Freemium is disabled, cannot determine duration"
@@ -89,7 +88,6 @@ internal class FreemiumManager(
         )
     }
 
-    //TODO: spatne vraci freemium info
     override suspend fun isFreemiumCurrentlyActive(): Boolean {
         if (configuration is Mon3tizeConfiguration.Freemium.Disabled){
             return false
@@ -193,14 +191,3 @@ internal class FreemiumManager(
             .await()
     }
 }
-
-
-//private suspend fun saveFreemiumInfo(info: FreemiumInfo) {
-//    val user = firebaseAuth.currentUser ?: return
-//    firestore.collection("users").document(user.uid)
-//        .update("freemium", info)
-//        .addOnFailureListener {
-//            firestore.collection("users").document(user.uid).set(mapOf("freemium" to info))
-//        }
-//        .await()
-//}

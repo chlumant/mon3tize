@@ -11,7 +11,6 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
@@ -22,8 +21,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 internal class BillingManager(
-    context: Context,
-    listener: PurchasesUpdatedListener
+    private val billingClient: BillingClient,
 ) : BillingActions {
 
     private val _isBillingReady = MutableStateFlow(false)
@@ -32,13 +30,7 @@ internal class BillingManager(
         Mon3tizeLogger.d("BillingManager", "BillingClient built, version 7.1.1")
     }
 
-
-    private val billingClient: BillingClient = BillingClient.newBuilder(context)
-        .setListener(listener)
-        .enablePendingPurchases()
-        .build()
-
-    private suspend fun startConnection() {
+    internal suspend fun startConnection() {
         return suspendCancellableCoroutine { continuation ->
             try {
                 billingClient.startConnection(object : BillingClientStateListener {
@@ -219,8 +211,8 @@ internal class BillingManager(
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         val hasActiveSubscription = purchasesList.any { purchase ->
                             purchase.products.contains(productId) &&
-                                purchase.isAcknowledged &&
-                                purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+                                    purchase.isAcknowledged &&
+                                    purchase.purchaseState == Purchase.PurchaseState.PURCHASED
                         }
                         continuation.resume(hasActiveSubscription)
                     } else {
@@ -250,8 +242,8 @@ internal class BillingManager(
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         val hasProduct = purchasesList.any { purchase ->
                             purchase.products.contains(productId) &&
-                                purchase.isAcknowledged &&
-                                purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+                                    purchase.isAcknowledged &&
+                                    purchase.purchaseState == Purchase.PurchaseState.PURCHASED
                         }
                         continuation.resume(hasProduct)
                     } else {

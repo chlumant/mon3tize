@@ -6,6 +6,7 @@ import kotlin.time.Duration.Companion.days
 public data class Mon3tizeConfiguration(
     val freemium: Freemium = Freemium.Disabled,
     val logLevel: LogLevel = LogLevel.NONE,
+    val clientId: String? = null
 ) {
 
     public enum class LogLevel {

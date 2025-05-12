@@ -28,6 +28,7 @@ fun ResetTrialScreen(navController: NavHostController) {
             Button(
                 onClick = {
                     scope.launch {
+                        //todo pridat needSignIn
                         Mon3tize.freemium.resetTrialUsed()
                     }
                     navController.navigate("home")

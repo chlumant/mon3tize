@@ -44,6 +44,9 @@ public object Mon3tize {
 
     internal val logLevel: Mon3tizeConfiguration.LogLevel? get() = this.configuration?.logLevel
 
+    internal val clientId: String? get() = configuration?.clientId
+
+
     public fun setUp(configuration: Mon3tizeConfiguration, context: Context) {
         this.configuration = configuration
 

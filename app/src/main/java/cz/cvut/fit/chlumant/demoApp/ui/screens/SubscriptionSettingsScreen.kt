@@ -32,13 +32,19 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
     val context = LocalContext.current
     val viewModel: FreemiumViewModel = viewModel()
 
-    var isActive by remember { mutableStateOf<Boolean?>(null) }
+    var hasActiveSubscription by remember { mutableStateOf<Boolean?>(null) }
+    var hasActiveTrial by remember { mutableStateOf<Boolean?>(null) }
 
     LaunchedEffect(Unit) {
-        viewModel.checkPremiumAccess { result ->
-            isActive = result
+        viewModel.checkSubscriptionStatus { result ->
+            hasActiveSubscription = result
+        }
+        viewModel.checkTrialStatus { result ->
+            hasActiveTrial = result
         }
     }
+
+    val hasPremiumAccess: Boolean? = hasActiveSubscription == true || hasActiveTrial == true
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -53,10 +59,32 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
         ) {
             Text("Subscription Management", fontSize = 22.sp)
 
-            when (isActive) {
+            when (hasPremiumAccess) {
                 null -> CircularProgressIndicator()
                 true -> {
-                    Text("You have an active subscription or a free trial.")
+                    if (hasActiveTrial == true && hasActiveSubscription == true) {
+                        Text("You have an active subscription and a free trial.")
+                    } else if (hasActiveTrial == true) {
+                        Text("You have an active free trial.")
+                    } else if (hasActiveSubscription == true) {
+                        Text("You have an active subscription.")
+                    }
+
+                    if (hasActiveTrial == true) {
+                        Button(
+                            onClick = {
+                                viewModel.disableFreemium()
+                                navController.navigate("home")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text("Cancel Free Trial")
+                        }
+                    }
+
+                    if (hasActiveSubscription == true)
                     Button(
                         onClick = {
                             Mon3tize.billing.openSubscriptionManagement(context, SUBSCRIPTION_PRODUCT_ID)
@@ -68,21 +96,12 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
                     ) {
                         Text("Cancel Subscription")
                     }
-                    Button(
-                        onClick = {
-                            viewModel.disableFreemium()
-                            navController.navigate("home")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text("Cancel Free Trial")
-                    }
                 }
+
                 false -> {
-                    Text("You have no active subscriptions.")
+                    Text("You dont have premium access")
                     NavigationButton(navController, "Buy Subscription", "payment")
+                    NavigationButton(navController, "Start Free Trial", "freemium")
                 }
             }
             NavigationButton(navController, "Sign Out", "signout")

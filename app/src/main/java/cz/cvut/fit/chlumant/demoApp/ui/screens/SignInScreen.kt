@@ -38,6 +38,7 @@ fun SignInScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text("Sign in needed in order to continue")
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(onClick = {

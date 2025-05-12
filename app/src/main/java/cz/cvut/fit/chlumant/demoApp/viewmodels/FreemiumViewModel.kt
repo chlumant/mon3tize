@@ -50,7 +50,6 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
-    //  TODO: tahle hardcoded vec se mi moc nelibi (ID)
     fun checkPremiumAccess(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val result = Mon3tize.isPremiumAccessAvailable(
@@ -60,10 +59,17 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
-    fun refreshFreemiumStatus() {
+    fun checkTrialStatus(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
-            _isFreemiumActive.value = active
+            val result = Mon3tize.freemium.isFreemiumCurrentlyActive()
+            onResult(result)
+        }
+    }
+
+    fun checkSubscriptionStatus(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val result = Mon3tize.billing.isSubscriptionActive(SUBSCRIPTION_PRODUCT_ID)
+            onResult(result)
         }
     }
 
@@ -72,16 +78,20 @@ class FreemiumViewModel : ViewModel() {
         _showTrialUsedDialog.value = false
     }
 
+    //    todo tohle se mi nejak nezda
+    fun hideTrialDialog() {
+        _trialExpired.value = false
+    }
+
     fun disableFreemium() {
         viewModelScope.launch {
             Mon3tize.freemium.disableFreemium()
-//            syncFreemiumStatus()
         }
     }
 
     //TODO: nemel bych pro uplynuti predplatnyho mit nejakej podobnej booelan jako trialUsed
     //TODO: !isActive && (info?.trialUsed == true || subscriptionExpired) && !trialExpiredShown
-    fun checkTrialStatus() {
+    fun checkPremium() {
         viewModelScope.launch {
             val isActive = Mon3tize.isPremiumAccessAvailable(SUBSCRIPTION_PRODUCT_ID)
             val trialUsed = Mon3tize.freemium.getTrialStatus()
@@ -93,10 +103,5 @@ class FreemiumViewModel : ViewModel() {
                 trialExpiredShown = true
             }
         }
-    }
-
-    //    todo tohle se mi nejak nezda
-    fun hideTrialDialog() {
-        _trialExpired.value = false
     }
 }

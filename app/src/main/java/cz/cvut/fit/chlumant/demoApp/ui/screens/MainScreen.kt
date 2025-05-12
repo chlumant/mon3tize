@@ -34,16 +34,16 @@ fun RockPaperScissorsGame(navController: NavHostController) {
         viewModel.checkPremiumAccess { result ->
             hasPremiumAccess = result
         }
-        viewModel.checkTrialStatus()
+        viewModel.checkPremium()
     }
 
     if (trialExpired) {
         Dialogs.TrialExpiredDialog(
             onDismiss = {
-                viewModel.hideTrialDialog()
+//                viewModel.hideTrialDialog()
             },
             onGoToSubscription = {
-                viewModel.hideTrialDialog()
+//                viewModel.hideTrialDialog()
                 navController.navigate("payment")
             }
         )

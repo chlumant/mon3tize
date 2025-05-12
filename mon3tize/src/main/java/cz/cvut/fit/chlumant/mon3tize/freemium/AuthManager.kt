@@ -10,6 +10,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,11 +24,13 @@ internal object AuthManager : FirebaseAuthActions {
         val credentialManager = CredentialManager.create(context)
         Log.d("AuthManager", "CredentialManager instance created.")
 
+            //todo: nevim jestli tu je ta vyjimka spravny reseni
+        val clientId = Mon3tize.clientId ?:
+                throw IllegalStateException("OAuth Client ID is not set. Please provide it in Mon3tizeConfiguration.")
+
+
         val signInWithGoogleOption = GetSignInWithGoogleOption
-            //todo; vyhodit hardcoded OAuth klic nekam do pice
-            //todo; idealne ho predat knihovne pri inicializaci a nejak si
-            //todo; ho posilat
-            .Builder("68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com")
+            .Builder(clientId)
             .build()
 
         Log.d("AuthManager", "GetSignInWithGoogleOption configured.")

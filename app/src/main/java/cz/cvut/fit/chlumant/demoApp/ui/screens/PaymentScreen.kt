@@ -53,7 +53,6 @@ fun PaymentScreen(navController: NavHostController) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-            //TODO: predelat logiku?
             Text(
                 text = "Select Product",
                 modifier = Modifier
@@ -67,6 +66,7 @@ fun PaymentScreen(navController: NavHostController) {
                 onClick = {
                     activity?.let { activity ->
                         coroutineScope.launch {
+                            //todo pridat needSignIn
                             Mon3tize.ads.showRewarded(
                                 activity = activity,
                                 adUnitId = UserKeys.AdMob.REWARDED_DEMO,
@@ -125,7 +125,6 @@ fun PaymentScreen(navController: NavHostController) {
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        //TODO: taky dost divny ne
                         Text("One-Time Purchase")
                     }
                 }

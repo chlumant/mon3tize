@@ -37,6 +37,7 @@ fun SignOutScreen(
             Button(
                 onClick = {
                     scope.launch {
+                        //todo pridat needSignIn
                         viewModel.signOut()
                         navController.navigate("home") {
                             popUpTo("home") { inclusive = true }

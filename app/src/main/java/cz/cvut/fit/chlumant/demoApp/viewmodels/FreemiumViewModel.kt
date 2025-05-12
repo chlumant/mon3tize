@@ -20,6 +20,7 @@ class FreemiumViewModel : ViewModel() {
     private val _showTrialUsedDialog = MutableStateFlow(false)
     val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
 
+
     init {
         syncFreemiumStatus()
     }

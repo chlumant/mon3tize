@@ -150,18 +150,19 @@ internal class FreemiumManager(
 
         val updated = if (info?.active == true && now < info.expiresAt) {
             info.copy(expiresAt = info.expiresAt + duration.inWholeMilliseconds)
-        } else {
+        } else if (info?.active != null) {
             FreemiumInfo(
                 active = true,
                 activatedAt = now,
                 expiresAt = now + duration.inWholeMilliseconds,
-                trialUsed = false
+                trialUsed = info.trialUsed
             )
+        } else {
+            error("Freemium info is null.")
         }
         saveFreemiumInfo(updated)
     }
 
-    //TODO: otestovat
     override suspend fun shortenFreemiumBy(duration: Duration) {
         checkFreemiumIsEnabled()
         val info = getFreemiumInfo()

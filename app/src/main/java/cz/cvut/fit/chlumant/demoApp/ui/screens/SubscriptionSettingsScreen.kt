@@ -59,14 +59,25 @@ fun SubscriptionSettingsScreen(navController: NavHostController) {
                     Text("You have an active subscription or a free trial.")
                     Button(
                         onClick = {
-//                        TODO: idk ten userkey jestli mit takhle nebo jinak
                             Mon3tize.billing.openSubscriptionManagement(context, SUBSCRIPTION_PRODUCT_ID)
+                            navController.navigate("home")
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
                         Text("Cancel Subscription")
+                    }
+                    Button(
+                        onClick = {
+                            viewModel.disableFreemium()
+                            navController.navigate("home")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text("Cancel Free Trial")
                     }
                 }
                 false -> {

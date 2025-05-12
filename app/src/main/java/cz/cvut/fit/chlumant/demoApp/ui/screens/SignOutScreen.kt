@@ -6,13 +6,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.launch
+import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 
 @Composable
 fun SignOutScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: SignInViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
 
@@ -34,7 +37,7 @@ fun SignOutScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        Mon3tize.freemium.auth.signOut()
+                        viewModel.signOut()
                         navController.navigate("home") {
                             popUpTo("home") { inclusive = true }
                         }

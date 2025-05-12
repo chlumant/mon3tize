@@ -33,4 +33,8 @@ class SignInViewModel(application: Application) : AndroidViewModel(application) 
             }
         }
     }
+
+    fun signOut() {
+        Mon3tize.freemium.auth.signOut()
+    }
 }

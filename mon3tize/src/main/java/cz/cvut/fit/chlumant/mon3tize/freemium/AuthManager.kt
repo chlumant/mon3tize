@@ -21,9 +21,14 @@ internal object AuthManager : FirebaseAuthActions {
         Log.d("AuthManager", "Starting getGoogleIdToken...")
 
         val credentialManager = CredentialManager.create(context)
+//        val clearRequest = androidx.credentials.ClearCredentialStateRequest()
+//        credentialManager.clearCredentialState(clearRequest)
         Log.d("AuthManager", "CredentialManager instance created.")
 
         val signInWithGoogleOption = GetSignInWithGoogleOption
+            //todo; vyhodit hardcoded OAuth klic nekam do pice
+            //todo; idealne ho predat knihovne pri inicializaci a nejak si
+            //todo; ho posilat
             .Builder("68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com")
             .build()
 
@@ -37,7 +42,7 @@ internal object AuthManager : FirebaseAuthActions {
 
         return try {
             val result: GetCredentialResponse = credentialManager.getCredential(context, request)
-            Log.d("AuthManager", "Credential response received: $result")
+            Log.d("AuthManager", "Credential response received: ${result.credential}")
 
             val credential = result.credential
             Log.d("AuthManager", "Credential type: ${credential::class.simpleName}")
@@ -45,15 +50,85 @@ internal object AuthManager : FirebaseAuthActions {
             if (credential is GoogleIdTokenCredential) {
                 Log.d("AuthManager", "Google ID Token found.")
                 return credential.idToken
-            } else {
-                Log.e("AuthManager", "Unexpected credential type: ${credential::class.simpleName}")
-                null
             }
+
+            if (credential is androidx.credentials.CustomCredential) {
+                Log.d("AuthManager", "CustomCredential detected, attempting to convert...")
+                try {
+                    val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                    val idToken = googleIdTokenCredential.idToken
+                    Log.d("AuthManager", "Extracted Google ID Token: $idToken")
+                    return idToken
+                } catch (e: Exception) {
+                    Log.e("AuthManager", "Failed to convert CustomCredential: ${e.message}")
+                }
+            }
+
+            Log.e("AuthManager", "Unexpected credential type: ${credential::class.simpleName}")
+            null
         } catch (e: Exception) {
             Log.e("AuthManager", "Error during Google Credential request: ${e.message}")
             null
         }
     }
+
+
+//    private suspend fun getGoogleIdToken(context: Context): String? {
+//        Log.d("AuthManager", "Starting getGoogleIdToken...")
+//
+//        val credentialManager = CredentialManager.create(context)
+//        Log.d("AuthManager", "CredentialManager instance created.")
+//
+//        // Vytvoříme možnost přihlášení přes Google
+//        val signInWithGoogleOption = GetSignInWithGoogleOption
+//            .Builder("68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com")
+//            .build()
+//
+//        Log.d("AuthManager", "GetSignInWithGoogleOption configured.")
+//
+//        // Vytvoříme požadavek na přihlášení, ale ne automaticky
+//        val request = GetCredentialRequest.Builder()
+//            .addCredentialOption(signInWithGoogleOption)
+//            .setPreferImmediatelyAvailableCredentials(false) // Tento flag zajistí, že Bottom Sheet se neobjeví automaticky
+//            .build()
+//
+//        Log.d("AuthManager", "GetCredentialRequest built.")
+//
+//        return try {
+//            val result: GetCredentialResponse = credentialManager.getCredential(context, request)
+//            Log.d("AuthManager", "Credential response received: ${result.credential}")
+//
+//            val credential = result.credential
+//            Log.d("AuthManager", "Credential type: ${credential::class.simpleName}")
+//
+//            // Pokud je credential typu GoogleIdTokenCredential
+//            if (credential is GoogleIdTokenCredential) {
+//                Log.d("AuthManager", "Google ID Token found directly.")
+//                return credential.idToken
+//            }
+//
+//            // Pokud je credential typu CustomCredential
+//            if (credential is androidx.credentials.CustomCredential) {
+//                Log.d("AuthManager", "CustomCredential detected, attempting to convert...")
+//                try {
+//                    val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+//                    val idToken = googleIdTokenCredential.idToken
+//                    Log.d("AuthManager", "Extracted Google ID Token: $idToken")
+//                    return idToken
+//                } catch (e: Exception) {
+//                    Log.e("AuthManager", "Failed to convert CustomCredential to GoogleIdTokenCredential: ${e.message}")
+//                }
+//            }
+//
+//            // Výpis veškerých dat, pokud stále token nelze získat
+//            Log.e("AuthManager", "Unexpected credential type: ${credential::class.simpleName}")
+//            Log.e("AuthManager", "Credential raw data: ${credential.toString()}")
+//            null
+//        } catch (e: Exception) {
+//            Log.e("AuthManager", "Error during Google Credential request: ${e.message}")
+//            null
+//        }
+//    }
 
     override suspend fun signInWithGoogle(context: Context, onResult: (Boolean, String?) -> Unit) {
         try {
@@ -122,3 +197,4 @@ internal object AuthManager : FirebaseAuthActions {
         return auth.currentUser?.isAnonymous == true
     }
 }
+

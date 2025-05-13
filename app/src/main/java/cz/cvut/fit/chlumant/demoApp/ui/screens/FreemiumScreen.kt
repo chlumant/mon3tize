@@ -44,7 +44,6 @@ fun FreemiumScreen(navController: NavHostController) {
                         viewModel.startTrial(
                             onNeedSignIn = { navController.navigate("signin") },
                             onActivated = {
-                                //TODO: prozkoumat
                                 navController.navigate("freemiumYes") {
                                     popUpTo("freemium") { inclusive = true }
                                 }
@@ -56,7 +55,6 @@ fun FreemiumScreen(navController: NavHostController) {
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-
                 NavigationButton(navController, "Dismiss", "home")
             } else {
                 Text(
@@ -88,10 +86,12 @@ fun FreemiumScreen(navController: NavHostController) {
 
     if (showTrialUsedDialog) {
         Dialogs.TrialAlreadyUsedDialog(
-            onDismiss = { viewModel.dismissTrialUsedDialog() },
-            onGoToSubscription = {
+            onDismiss = {
                 viewModel.dismissTrialUsedDialog()
+            },
+            onGoToSubscription = {
                 navController.navigate("payment")
+                viewModel.dismissTrialUsedDialog()
             }
         )
     }

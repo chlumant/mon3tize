@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import kotlinx.coroutines.launch
 import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 
@@ -18,6 +18,7 @@ fun SignOutScreen(
     viewModel: SignInViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
+    val isSignedIn = viewModel.isUserSignedIn()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -30,34 +31,39 @@ fun SignOutScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Do you want to sign out?", style = MaterialTheme.typography.headlineSmall)
+            if (isSignedIn) {
+                Text("Do you want to sign out?", style = MaterialTheme.typography.headlineSmall)
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Button(
-                onClick = {
-                    scope.launch {
-                        //todo pridat needSignIn
-                        viewModel.signOut()
-                        navController.navigate("home") {
-                            popUpTo("home") { inclusive = true }
+                Button(
+                    onClick = {
+                        scope.launch {
+                            viewModel.signOut()
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
+                            }
                         }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Sign Out")
-            }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Sign Out")
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedButton(
-                onClick = {
-                    navController.popBackStack()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Cancel")
+                OutlinedButton(
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancel")
+                }
+            } else {
+                Text("You are currently not signed in.", style = MaterialTheme.typography.headlineSmall)
+                NavigationButton(navController, "Sign In", "signin")
+                NavigationButton(navController, "Go Back To Home Screen", "home")
             }
         }
     }

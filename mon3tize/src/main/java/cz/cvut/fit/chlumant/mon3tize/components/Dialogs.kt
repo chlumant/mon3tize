@@ -56,7 +56,7 @@ public object Dialogs {
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text("Free Trial Expired")
+                Text("Premium Access Expired")
             },
             confirmButton = {
                 Button(

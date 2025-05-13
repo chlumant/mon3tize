@@ -2,7 +2,6 @@ package cz.cvut.fit.chlumant.mon3tize
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import com.android.billingclient.api.*
 import com.google.firebase.FirebaseApp
 import cz.cvut.fit.chlumant.mon3tize.adManagers.AdActions
@@ -14,6 +13,7 @@ import cz.cvut.fit.chlumant.mon3tize.freemium.AuthManager
 import cz.cvut.fit.chlumant.mon3tize.freemium.FirebaseAuthActions
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumActions
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumManager
+import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,7 +78,7 @@ public object Mon3tize {
 
         if (configuration?.freemium is Mon3tizeConfiguration.Freemium.Enabled) {
             val hasActiveTrial = freemium.isFreemiumCurrentlyActive()
-            Log.d("Mon3tize", "isPremiumAccessAvailable: $hasActiveTrial")
+            Mon3tizeLogger.d("Mon3tize", "isPremiumAccessAvailable: $hasActiveTrial")
             return hasActiveTrial || hasActiveSubscription
         } else {
             return hasActiveSubscription

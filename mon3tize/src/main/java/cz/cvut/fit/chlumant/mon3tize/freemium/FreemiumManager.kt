@@ -1,10 +1,10 @@
 package cz.cvut.fit.chlumant.mon3tize.freemium
 
-import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import cz.cvut.fit.chlumant.mon3tize.Mon3tizeConfiguration
+import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
 import kotlinx.coroutines.tasks.await
 import kotlin.collections.get
 import kotlin.time.Duration
@@ -70,7 +70,7 @@ internal class FreemiumManager(
             expiresAt = expiresAt,
             trialUsed = true
         )
-        Log.d("FreemiumManager", "enableFreemium: $info")
+        Mon3tizeLogger.d("FreemiumManager", "enableFreemium: $info")
         saveFreemiumInfo(info)
 
         onActivated()
@@ -92,13 +92,10 @@ internal class FreemiumManager(
         if (configuration is Mon3tizeConfiguration.Freemium.Disabled){
             return false
         }
-        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 2")
         val info = getFreemiumInfo() ?: return false
-        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: $info")
         val now = System.currentTimeMillis()
 
         if (info.active && now > info.expiresAt) {
-            Log.d("FreemiumManager", "??")
             saveFreemiumInfo(
                 FreemiumInfo(
                     active = false,
@@ -109,7 +106,6 @@ internal class FreemiumManager(
             )
             return false
         }
-        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 4")
         return info.active
     }
 
@@ -123,16 +119,12 @@ internal class FreemiumManager(
         val doc = firestore.collection("users").document(user.uid).get().await()
         val data = doc.get("freemium") as? Map<*, *> ?: return null
 
-        Log.d("FreemiumManager", "Loaded from Firestore: $data")
-
         val info = FreemiumInfo(
             active = (data["active"]) as? Boolean == true,
             activatedAt = (data["activatedAt"] as? Number)?.toLong() ?: 0L,
             expiresAt = (data["expiresAt"] as? Number)?.toLong() ?: 0L,
             trialUsed = (data["trialUsed"]) as? Boolean == true
         )
-
-        Log.d("FreemiumManager", "Parsed FreemiumInfo: $info")
 
         return info
     }

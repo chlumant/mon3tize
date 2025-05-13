@@ -40,11 +40,11 @@ fun RockPaperScissorsGame(navController: NavHostController) {
     if (trialExpired) {
         Dialogs.TrialExpiredDialog(
             onDismiss = {
-//                viewModel.hideTrialDialog()
+                viewModel.hideTrialDialog()
             },
             onGoToSubscription = {
-//                viewModel.hideTrialDialog()
                 navController.navigate("payment")
+                viewModel.hideTrialDialog()
             }
         )
     }

@@ -1,10 +1,8 @@
 package cz.cvut.fit.chlumant.mon3tize.billing
 
-import android.content.Context
-import android.util.Log
+
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener

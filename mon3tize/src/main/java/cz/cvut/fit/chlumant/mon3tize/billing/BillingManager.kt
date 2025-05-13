@@ -3,7 +3,6 @@ package cz.cvut.fit.chlumant.mon3tize.billing
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.net.toUri
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -49,7 +48,6 @@ internal class BillingManager(
                     }
 
                     override fun onBillingServiceDisconnected() {
-                        Log.w("BillingManager", "Billing service disconnected")
                         _isBillingReady.value = false
                     }
                 })

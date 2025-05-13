@@ -26,11 +26,15 @@ import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.demoApp.ui.components.showToast
 import cz.cvut.fit.chlumant.demoApp.viewmodels.PaymentViewModel
+import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.launch
 
 @Composable
-fun PaymentScreen(navController: NavHostController) {
+fun PaymentScreen(
+    navController: NavHostController,
+    signInViewModel: SignInViewModel = viewModel()
+) {
 
     val activity = LocalActivity.current
     val viewModel: PaymentViewModel = viewModel()
@@ -43,6 +47,8 @@ fun PaymentScreen(navController: NavHostController) {
                 showToast(activity, "Error while preloading add")
             })
     }
+
+    val isUserSignedIn = signInViewModel.isUserSignedIn()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -66,14 +72,18 @@ fun PaymentScreen(navController: NavHostController) {
                 onClick = {
                     activity?.let { activity ->
                         coroutineScope.launch {
-                            //todo pridat needSignIn
-                            Mon3tize.ads.showRewarded(
-                                activity = activity,
-                                adUnitId = UserKeys.AdMob.REWARDED_DEMO,
-                                onRewardEarn = { reward -> viewModel.handleReward(reward) },
-                                onClose = {},
-                                onError = { showToast(activity, "Error while showing ad") }
-                            )
+                            if(isUserSignedIn) {
+                                Mon3tize.ads.showRewarded(
+                                    activity = activity,
+                                    adUnitId = UserKeys.AdMob.REWARDED_DEMO,
+                                    onRewardEarn = { reward -> viewModel.handleReward(reward) },
+                                    onClose = {},
+                                    onError = { showToast(activity, "Error while showing ad") }
+                                )
+                            } else {
+                                showToast(activity, "Sign in to receive the trial.")
+                                navController.navigate("signin")
+                            }
                         }
                     }
                 },

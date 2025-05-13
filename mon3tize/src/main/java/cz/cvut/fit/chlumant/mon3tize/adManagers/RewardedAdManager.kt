@@ -1,7 +1,6 @@
 package cz.cvut.fit.chlumant.mon3tize.adManagers
 
 import android.app.Activity
-import android.util.Log
 import android.content.Context
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -81,6 +80,3 @@ public class RewardedAdManager(private val context: Context) {
         }
     }
 }
-
-
-

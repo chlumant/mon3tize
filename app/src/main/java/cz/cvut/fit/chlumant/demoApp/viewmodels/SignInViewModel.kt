@@ -37,4 +37,8 @@ class SignInViewModel(application: Application) : AndroidViewModel(application) 
     fun signOut() {
         Mon3tize.freemium.auth.signOut()
     }
+
+    fun isUserSignedIn(): Boolean {
+        return Mon3tize.freemium.auth.isUserSignedIn()
+    }
 }

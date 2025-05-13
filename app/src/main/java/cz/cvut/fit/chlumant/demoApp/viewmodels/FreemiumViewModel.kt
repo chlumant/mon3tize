@@ -18,7 +18,7 @@ class FreemiumViewModel : ViewModel() {
     private var trialExpiredShown = false
 
     private val _showTrialUsedDialog = MutableStateFlow(false)
-    val showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
+    var showTrialUsedDialog: StateFlow<Boolean> = _showTrialUsedDialog
 
 
     init {
@@ -27,8 +27,7 @@ class FreemiumViewModel : ViewModel() {
 
     private fun syncFreemiumStatus() {
         viewModelScope.launch {
-            val active = Mon3tize.freemium.isFreemiumCurrentlyActive()
-            _isFreemiumActive.value = active
+            Mon3tize.freemium.isFreemiumCurrentlyActive()
         }
     }
 
@@ -73,12 +72,12 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
-//    todo tohle se mi nejak nezda
+    //trial used dialog
     fun dismissTrialUsedDialog() {
         _showTrialUsedDialog.value = false
     }
 
-    //    todo tohle se mi nejak nezda
+    //trial expired dialog
     fun hideTrialDialog() {
         _trialExpired.value = false
     }
@@ -89,19 +88,24 @@ class FreemiumViewModel : ViewModel() {
         }
     }
 
-    //TODO: nemel bych pro uplynuti predplatnyho mit nejakej podobnej booelan jako trialUsed
-    //TODO: !isActive && (info?.trialUsed == true || subscriptionExpired) && !trialExpiredShown
+
     fun checkPremium() {
         viewModelScope.launch {
-            val isActive = Mon3tize.isPremiumAccessAvailable(SUBSCRIPTION_PRODUCT_ID)
+            val isTrialActive = Mon3tize.freemium.isFreemiumCurrentlyActive()
             val trialUsed = Mon3tize.freemium.getTrialStatus()
 
-            val shouldShowDialog = !isActive && trialUsed == true && !trialExpiredShown
+            val shouldShowDialog = !isTrialActive && trialUsed == true && !trialExpiredShown
 
             if (shouldShowDialog) {
                 _trialExpired.value = true
                 trialExpiredShown = true
             }
+        }
+    }
+
+    fun resetFreeTrial() {
+        viewModelScope.launch {
+            Mon3tize.freemium.resetTrialUsed()
         }
     }
 }

@@ -1,5 +1,6 @@
 package cz.cvut.fit.chlumant.demoApp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
@@ -48,8 +49,8 @@ class PaymentViewModel : ViewModel() {
     fun handleReward(reward: AdReward) {
         viewModelScope.launch {
             try {
-                if (reward.type == UserKeys.Freemium.REWORD_TYPE) {
-                    Mon3tize.freemium.extendFreemiumBy(reward.amount.days)
+                if (reward.type == UserKeys.Freemium.REWARD_TYPE) {
+                    Mon3tize.freemium.extendFreemiumBy(1.days)
                 }
             } catch (e: Exception) {
                 _screenStateStream.update { it.asLoaded()?.copy(rewardError = e) ?: it }

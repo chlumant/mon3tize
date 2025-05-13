@@ -9,17 +9,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
-import cz.cvut.fit.chlumant.demoApp.viewmodels.FreemiumViewModel
-import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 import kotlinx.coroutines.launch
+import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 
 @Composable
-fun ResetTrialScreen(
+fun SignOutScreen(
     navController: NavHostController,
-    freemiumViewModel: FreemiumViewModel = viewModel(),
-    signInViewModel: SignInViewModel = viewModel()
+    viewModel: SignInViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
+    val isSignedIn = viewModel.isUserSignedIn()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -28,41 +27,43 @@ fun ResetTrialScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (signInViewModel.isUserSignedIn()) {
+            if (isSignedIn) {
+                Text("Do you want to sign out?", style = MaterialTheme.typography.headlineSmall)
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 Button(
                     onClick = {
                         scope.launch {
-                            freemiumViewModel.resetFreeTrial()
+                            viewModel.signOut()
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
+                            }
                         }
-                        navController.navigate("home")
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Reset Free Trial")
+                    Text("Sign Out")
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                Button(
+                OutlinedButton(
                     onClick = {
-                        navController.navigate("home")
+                        navController.popBackStack()
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Back To Home Screen")
+                    Text("Cancel")
                 }
             } else {
-                Text(text = "You need to be signed in to perform this action.")
-                Spacer(modifier = Modifier.height(24.dp))
+                Text("You are currently not signed in.", style = MaterialTheme.typography.headlineSmall)
                 NavigationButton(navController, "Sign In", "signin")
+                NavigationButton(navController, "Go Back To Home Screen", "home")
             }
         }
     }

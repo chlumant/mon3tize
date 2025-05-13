@@ -17,7 +17,9 @@ object UserKeys {
 
     object Freemium {
 
-        const val REWORD_TYPE = "freemium_reward"
+//      Rewarded demo ad returns 10 coins by default
+//      non demo ads can be customized accordingly
+        const val REWARD_TYPE = "coins"
     }
 
     //    Google Cloud Web Client ID (z Google Cloud Console > OAuth Web client)

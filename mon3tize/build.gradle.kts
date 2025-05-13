@@ -108,6 +108,12 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.play.services.ads)
 
+    implementation(libs.billingclient.billing)
+
+    implementation(libs.jetpack.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

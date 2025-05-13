@@ -1,29 +1,30 @@
 package cz.cvut.fit.chlumant.mon3tize.billing
 
-import android.content.Context
-import android.util.Log
+
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
 
-@Suppress("DEPRECATION")
-internal class PurchaseListener(private val context: Context) : PurchasesUpdatedListener {
+
+internal class PurchaseListener : PurchasesUpdatedListener {
+
+    private var billingClient: BillingClient? = null
+    
+    fun setBillingClient(client: BillingClient) {
+        this.billingClient = client
+    }
 
     override fun onPurchasesUpdated(
         billingResult: BillingResult,
         purchases: MutableList<Purchase>?
     ) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-
             for (purchase in purchases) {
-                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                    if (!purchase.isAcknowledged) {
-                        acknowledgePurchase(purchase)
-                    }
+                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
+                    acknowledgePurchase(purchase)
                 }
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
@@ -34,33 +35,19 @@ internal class PurchaseListener(private val context: Context) : PurchasesUpdated
     }
 
     private fun acknowledgePurchase(purchase: Purchase) {
-        val billingClient = BillingClient.newBuilder(context)
-            .enablePendingPurchases()
-            .setListener(this)
-            .build()
+        billingClient?.let { client ->
+            val params = AcknowledgePurchaseParams.newBuilder()
+                .setPurchaseToken(purchase.purchaseToken)
+                .build()
 
-        billingClient.startConnection(object : BillingClientStateListener {
-            override fun onBillingSetupFinished(result: BillingResult) {
-                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    val params = AcknowledgePurchaseParams.newBuilder()
-                        .setPurchaseToken(purchase.purchaseToken)
-                        .build()
-
-                    billingClient.acknowledgePurchase(params) { ackResult ->
-                        if (ackResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                            Mon3tizeLogger.d(TAG, "Purchase acknowledged.")
-                        } else {
-                            Mon3tizeLogger.e(TAG, "Failed to acknowledge purchase: ${ackResult.debugMessage}")
-                        }
-                        billingClient.endConnection()
-                    }
+            client.acknowledgePurchase(params) { ackResult ->
+                if (ackResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                    Mon3tizeLogger.d(TAG, "Purchase acknowledged.")
+                } else {
+                    Mon3tizeLogger.e(TAG, "Failed to acknowledge purchase: ${ackResult.debugMessage}")
                 }
             }
-
-            override fun onBillingServiceDisconnected() {
-                Log.w(TAG, "Billing service disconnected while acknowledging purchase.")
-            }
-        })
+        } ?: Mon3tizeLogger.e(TAG, "BillingClient is not set.")
     }
 
     private companion object {

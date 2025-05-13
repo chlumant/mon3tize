@@ -1,47 +1,44 @@
-@file:Suppress("DEPRECATION")
-
 package cz.cvut.fit.chlumant.demoApp.viewmodels
 
 import android.app.Application
 import android.util.Log
-import androidx.activity.result.ActivityResult
 import androidx.lifecycle.AndroidViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import androidx.lifecycle.viewModelScope
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
+import kotlinx.coroutines.launch
 
 class SignInViewModel(application: Application) : AndroidViewModel(application) {
 
-    fun handleSignInResult(
-        result: ActivityResult,
+    fun handleSignIn(
+        context: Application,
         onSuccess: (String) -> Unit,
         onError: (Exception?) -> Unit
     ) {
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-
-        try {
-            val account: GoogleSignInAccount = task.getResult(Exception::class.java)!!
-            val idToken = account.idToken
-            if (idToken == null) {
-                Log.e("SignIn", "ID token is null.")
-                onError(IllegalStateException("ID token is null"))
-                return
-            }
-
-            Mon3tize.freemium.auth.signInWithGoogleToken(idToken) { success, uid ->
-                if (success && uid != null) {
-                    Log.d("SignIn", "Sign In Successful: $uid")
-                    onSuccess(uid)
-                } else {
-                    Log.e("SignIn", "Firebase Log In Failed")
-                    onError(null)
+        Log.d("SignInViewModel", "handleSignIn called.")
+        viewModelScope.launch {
+            Log.d("SignInViewModel", "Coroutine started in handleSignIn.")
+            try {
+                Mon3tize.freemium.auth.signInWithGoogle(context) { success, uid ->
+                    if (success && uid != null) {
+                        Log.d("SignInViewModel", "Sign In Successful: $uid")
+                        onSuccess(uid)
+                    } else {
+                        Log.e("SignInViewModel", "Sign In Failed - success: $success, uid: $uid")
+                        onError(null)
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("SignInViewModel", "Exception in sign-in process: ${e.message}")
+                onError(e)
             }
-
-        } catch (e: Exception) {
-            Log.e("SignIn", "Google Log In Failed", e)
-            onError(e)
         }
     }
-}
 
+    fun signOut() {
+        Mon3tize.freemium.auth.signOut()
+    }
+
+    fun isUserSignedIn(): Boolean {
+        return Mon3tize.freemium.auth.isUserSignedIn()
+    }
+}

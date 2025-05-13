@@ -13,6 +13,8 @@ class Mon3tizeDemoApp : Application() {
         Mon3tize.setUp(
             configuration = Mon3tizeConfiguration(
                 freemium = Mon3tizeConfiguration.Freemium.Enabled(10.days),
+                logLevel = Mon3tizeConfiguration.LogLevel.ALL,
+                clientId = "68214838435-fesjfgrps0jcdgts4u5jmdkegnshq2ar.apps.googleusercontent.com"
             ),
             context = applicationContext
         )

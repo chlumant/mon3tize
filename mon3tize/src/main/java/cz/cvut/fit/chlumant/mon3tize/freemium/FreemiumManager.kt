@@ -1,10 +1,10 @@
 package cz.cvut.fit.chlumant.mon3tize.freemium
 
-import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import cz.cvut.fit.chlumant.mon3tize.Mon3tizeConfiguration
+import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
 import kotlinx.coroutines.tasks.await
 import kotlin.collections.get
 import kotlin.time.Duration
@@ -36,7 +36,6 @@ internal class FreemiumManager(
         saveFreemiumInfo(info)
     }
 
-    //TODO: nejsem si jistej jestli spravne pracuju s tim configem
     private fun getTrialDurationMillis(): Long {
         require(configuration is Mon3tizeConfiguration.Freemium.Enabled) {
             "Freemium is disabled, cannot determine duration"
@@ -71,7 +70,7 @@ internal class FreemiumManager(
             expiresAt = expiresAt,
             trialUsed = true
         )
-        Log.d("FreemiumManager", "enableFreemium: $info")
+        Mon3tizeLogger.d("FreemiumManager", "enableFreemium: $info")
         saveFreemiumInfo(info)
 
         onActivated()
@@ -89,18 +88,14 @@ internal class FreemiumManager(
         )
     }
 
-    //TODO: spatne vraci freemium info
     override suspend fun isFreemiumCurrentlyActive(): Boolean {
         if (configuration is Mon3tizeConfiguration.Freemium.Disabled){
             return false
         }
-        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 2")
         val info = getFreemiumInfo() ?: return false
-        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: $info")
         val now = System.currentTimeMillis()
 
         if (info.active && now > info.expiresAt) {
-            Log.d("FreemiumManager", "??")
             saveFreemiumInfo(
                 FreemiumInfo(
                     active = false,
@@ -111,7 +106,6 @@ internal class FreemiumManager(
             )
             return false
         }
-        Log.d("FreemiumManager", "isFreemiumCurrentlyActive: 4")
         return info.active
     }
 
@@ -125,16 +119,12 @@ internal class FreemiumManager(
         val doc = firestore.collection("users").document(user.uid).get().await()
         val data = doc.get("freemium") as? Map<*, *> ?: return null
 
-        Log.d("FreemiumManager", "Loaded from Firestore: $data")
-
         val info = FreemiumInfo(
             active = (data["active"]) as? Boolean == true,
             activatedAt = (data["activatedAt"] as? Number)?.toLong() ?: 0L,
             expiresAt = (data["expiresAt"] as? Number)?.toLong() ?: 0L,
             trialUsed = (data["trialUsed"]) as? Boolean == true
         )
-
-        Log.d("FreemiumManager", "Parsed FreemiumInfo: $info")
 
         return info
     }
@@ -152,18 +142,19 @@ internal class FreemiumManager(
 
         val updated = if (info?.active == true && now < info.expiresAt) {
             info.copy(expiresAt = info.expiresAt + duration.inWholeMilliseconds)
-        } else {
+        } else if (info?.active != null) {
             FreemiumInfo(
                 active = true,
                 activatedAt = now,
                 expiresAt = now + duration.inWholeMilliseconds,
-                trialUsed = false
+                trialUsed = info.trialUsed
             )
+        } else {
+            error("Freemium info is null.")
         }
         saveFreemiumInfo(updated)
     }
 
-    //TODO: otestovat
     override suspend fun shortenFreemiumBy(duration: Duration) {
         checkFreemiumIsEnabled()
         val info = getFreemiumInfo()
@@ -193,14 +184,3 @@ internal class FreemiumManager(
             .await()
     }
 }
-
-
-//private suspend fun saveFreemiumInfo(info: FreemiumInfo) {
-//    val user = firebaseAuth.currentUser ?: return
-//    firestore.collection("users").document(user.uid)
-//        .update("freemium", info)
-//        .addOnFailureListener {
-//            firestore.collection("users").document(user.uid).set(mapOf("freemium" to info))
-//        }
-//        .await()
-//}

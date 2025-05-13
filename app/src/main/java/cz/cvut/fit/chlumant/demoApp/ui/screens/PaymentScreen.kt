@@ -26,11 +26,15 @@ import cz.cvut.fit.chlumant.demoApp.ui.components.NavigationButton
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.demoApp.ui.components.showToast
 import cz.cvut.fit.chlumant.demoApp.viewmodels.PaymentViewModel
+import cz.cvut.fit.chlumant.demoApp.viewmodels.SignInViewModel
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
 import kotlinx.coroutines.launch
 
 @Composable
-fun PaymentScreen(navController: NavHostController) {
+fun PaymentScreen(
+    navController: NavHostController,
+    signInViewModel: SignInViewModel = viewModel()
+) {
 
     val activity = LocalActivity.current
     val viewModel: PaymentViewModel = viewModel()
@@ -44,6 +48,8 @@ fun PaymentScreen(navController: NavHostController) {
             })
     }
 
+    val isUserSignedIn = signInViewModel.isUserSignedIn()
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -53,7 +59,6 @@ fun PaymentScreen(navController: NavHostController) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-            //TODO: predelat logiku?
             Text(
                 text = "Select Product",
                 modifier = Modifier
@@ -67,13 +72,18 @@ fun PaymentScreen(navController: NavHostController) {
                 onClick = {
                     activity?.let { activity ->
                         coroutineScope.launch {
-                            Mon3tize.ads.showRewarded(
-                                activity = activity,
-                                adUnitId = UserKeys.AdMob.REWARDED_DEMO,
-                                onRewardEarn = { reward -> viewModel.handleReward(reward) },
-                                onClose = {},
-                                onError = { showToast(activity, "Error while showing ad") }
-                            )
+                            if(isUserSignedIn) {
+                                Mon3tize.ads.showRewarded(
+                                    activity = activity,
+                                    adUnitId = UserKeys.AdMob.REWARDED_DEMO,
+                                    onRewardEarn = { reward -> viewModel.handleReward(reward) },
+                                    onClose = {},
+                                    onError = { showToast(activity, "Error while showing ad") }
+                                )
+                            } else {
+                                showToast(activity, "Sign in to receive the trial.")
+                                navController.navigate("signin")
+                            }
                         }
                     }
                 },
@@ -125,7 +135,6 @@ fun PaymentScreen(navController: NavHostController) {
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        //TODO: taky dost divny ne
                         Text("One-Time Purchase")
                     }
                 }

@@ -1,7 +1,7 @@
 name: Publish to Maven Central
 
 on:
-  workflow_dispatch: # allows manual trigger
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -20,37 +20,21 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Create gradle.properties for secrets
+      - name: Create gradle.properties with decoded signing key
         run: |
           mkdir -p ~/.gradle
+
           echo "ossrhUsername=${{ secrets.OSSRHUSERNAME }}" >> ~/.gradle/gradle.properties
           echo "ossrhPassword=${{ secrets.OSSRHPASSWORD }}" >> ~/.gradle/gradle.properties
           echo "signing.keyId=650E303A" >> ~/.gradle/gradle.properties
           echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> ~/.gradle/gradle.properties
-          cat <<EOF >> ~/.gradle/gradle.properties
-          signing.secretKey=${{ secrets.SIGNING_SECRETKEY }}
-          EOF
 
-      - name: Debug Check signing.keyId
-        run: |
-          echo "Key ID: ${{ secrets.SIGNING_KEYID }}"
-
-      - name: Debug Check if signing.secretKey exists (length)
-        run: |
-          echo "${{ secrets.SIGNING_SECRETKEY }}" | base64 | wc -c
-
-      - name: Debug Show first few chars of signing.secretKey (safely encoded)
-        run: |
-          echo "${{ secrets.SIGNING_SECRETKEY }}" | base64 | head -n 5
-
-      - name: Debug Check gradle.properties content (excluding secretKey)
-        run: |
-          grep -v "secretKey" ~/.gradle/gradle.properties || true
-
+          # Decode the base64 private key into the property
+          echo -n "signing.secretKey=" >> ~/.gradle/gradle.properties
+          echo "${{ secrets.SIGNING_SECRETKEY_BASE64 }}" | base64 --decode >> ~/.gradle/gradle.properties
 
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
 
       - name: Publish to Maven Central
         run: ./gradlew publish --no-daemon --stacktrace --info
-

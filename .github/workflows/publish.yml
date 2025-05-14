@@ -25,7 +25,7 @@ jobs:
           mkdir -p ~/.gradle
           echo "ossrhUsername=${{ secrets.OSSRHUSERNAME }}" >> ~/.gradle/gradle.properties
           echo "ossrhPassword=${{ secrets.OSSRHPASSWORD }}" >> ~/.gradle/gradle.properties
-          echo "signing.keyId=${{ secrets.SIGNING_KEYID }}" >> ~/.gradle/gradle.properties
+          echo "signing.keyId=650E303A" >> ~/.gradle/gradle.properties
           echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> ~/.gradle/gradle.properties
           cat <<EOF >> ~/.gradle/gradle.properties
           signing.secretKey=${{ secrets.SIGNING_SECRETKEY }}

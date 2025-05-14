@@ -59,9 +59,9 @@ afterEvaluate {
 
     signing {
         useInMemoryPgpKeys(
-            findProperty("signing_keyId") as String,
-            findProperty("signing_secretKey") as String,
-            findProperty("signing_password") as String
+            findProperty("signing.keyId") as String,
+            findProperty("signing.secretKey") as String,
+            findProperty("signing.password") as String
         )
         sign(publishing.publications["release"])
     }
@@ -70,9 +70,6 @@ afterEvaluate {
 android {
     namespace = "cz.cvut.fit.chlumant.mon3tize"
     compileSdk = 36
-
-    group = "io.github.chlumant"
-    version = "0.1.0"
 
     defaultConfig {
         minSdk = 26

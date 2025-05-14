@@ -31,6 +31,22 @@ jobs:
           signing.secretKey=${{ secrets.SIGNING_SECRETKEY }}
           EOF
 
+      - name: Debug Check signing.keyId
+        run: |
+          echo "Key ID: ${{ secrets.SIGNING_KEYID }}"
+
+      - name: Debug Check if signing.secretKey exists (length)
+        run: |
+          echo "${{ secrets.SIGNING_SECRETKEY }}" | base64 | wc -c
+
+      - name: Debug Show first few chars of signing.secretKey (safely encoded)
+        run: |
+          echo "${{ secrets.SIGNING_SECRETKEY }}" | base64 | head -n 5
+
+      - name: Debug Check gradle.properties content (excluding secretKey)
+        run: |
+          grep -v "secretKey" ~/.gradle/gradle.properties || true
+
 
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew

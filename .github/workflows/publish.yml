@@ -26,11 +26,15 @@ jobs:
           echo "ossrhUsername=${{ secrets.OSSRHUSERNAME }}" >> ~/.gradle/gradle.properties
           echo "ossrhPassword=${{ secrets.OSSRHPASSWORD }}" >> ~/.gradle/gradle.properties
           echo "signing.keyId=${{ secrets.SIGNING_KEYID }}" >> ~/.gradle/gradle.properties
-          echo "signing.secretKey=${{ secrets.SIGNING_SECRETKEY }}" >> ~/.gradle/gradle.properties
           echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> ~/.gradle/gradle.properties
+          cat <<EOF >> ~/.gradle/gradle.properties
+          signing.secretKey=${{ secrets.SIGNING_SECRETKEY }}
+          EOF
+
 
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
 
       - name: Publish to Maven Central
-        run: ./gradlew publish --no-daemon
+        run: ./gradlew publish --no-daemon --stacktrace --info
+

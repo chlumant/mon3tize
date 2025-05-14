@@ -31,5 +31,3 @@ public interface BillingActions {
 
     public fun endConnection()
 }
-
-

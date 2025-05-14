@@ -4,7 +4,6 @@ import kotlin.time.Duration
 
 public interface FreemiumActions {
 
-    //TODO: TOHLE MA BYT TADY?
     public val auth: FirebaseAuthActions
 
     public suspend fun canActivateTrial(): Boolean

@@ -49,7 +49,7 @@ fun SignInScreen(
                     context.applicationContext as Application,
                     onSuccess = { uid ->
                         Log.d("SignInScreen", "Sign In Success: $uid")
-                        navController.popBackStack()
+                        navController.navigate("home")
                     },
                     onError = {
                         Log.e("SignInScreen", "Sign In Failed: ${it?.message}")

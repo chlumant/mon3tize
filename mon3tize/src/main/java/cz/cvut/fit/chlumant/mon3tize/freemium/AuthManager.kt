@@ -24,7 +24,6 @@ internal object AuthManager : FirebaseAuthActions {
         val credentialManager = CredentialManager.create(context)
         Mon3tizeLogger.d("AuthManager", "CredentialManager instance created.")
 
-            //todo: nevim jestli tu je ta vyjimka spravny reseni
         val clientId = Mon3tize.clientId ?:
                 throw IllegalStateException("OAuth Client ID is not set. Please provide it in Mon3tizeConfiguration.")
 
@@ -139,4 +138,3 @@ internal object AuthManager : FirebaseAuthActions {
         return auth.currentUser?.isAnonymous == true
     }
 }
-

@@ -9,8 +9,6 @@ import cz.cvut.fit.chlumant.mon3tize.adManagers.AdManager
 import cz.cvut.fit.chlumant.mon3tize.billing.BillingActions
 import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
 import cz.cvut.fit.chlumant.mon3tize.billing.PurchaseListener
-import cz.cvut.fit.chlumant.mon3tize.freemium.AuthManager
-import cz.cvut.fit.chlumant.mon3tize.freemium.FirebaseAuthActions
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumActions
 import cz.cvut.fit.chlumant.mon3tize.freemium.FreemiumManager
 import cz.cvut.fit.chlumant.mon3tize.util.Mon3tizeLogger
@@ -36,11 +34,6 @@ public object Mon3tize {
     private lateinit var adManager: AdManager
 
     public val ads: AdActions get() = adManager
-
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var authManager: AuthManager
-
-    public val auth: FirebaseAuthActions get() = authManager
 
     internal val logLevel: Mon3tizeConfiguration.LogLevel? get() = this.configuration?.logLevel
 

@@ -1,12 +1,11 @@
 package cz.cvut.fit.chlumant.demoApp.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
 import cz.cvut.fit.chlumant.demoApp.ui.components.UserKeys
 import cz.cvut.fit.chlumant.mon3tize.Mon3tize
-import cz.cvut.fit.chlumant.mon3tize.adManagers.AdReward
+import cz.cvut.fit.chlumant.mon3tize.ads.AdReward
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow

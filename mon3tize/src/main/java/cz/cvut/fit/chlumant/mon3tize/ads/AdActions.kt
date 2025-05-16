@@ -1,4 +1,4 @@
-package cz.cvut.fit.chlumant.mon3tize.adManagers
+package cz.cvut.fit.chlumant.mon3tize.ads
 
 import android.app.Activity
 

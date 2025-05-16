@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.android.billingclient.api.*
 import com.google.firebase.FirebaseApp
-import cz.cvut.fit.chlumant.mon3tize.adManagers.AdActions
-import cz.cvut.fit.chlumant.mon3tize.adManagers.AdManager
+import cz.cvut.fit.chlumant.mon3tize.ads.AdActions
+import cz.cvut.fit.chlumant.mon3tize.ads.AdManager
 import cz.cvut.fit.chlumant.mon3tize.billing.BillingActions
 import cz.cvut.fit.chlumant.mon3tize.billing.BillingManager
 import cz.cvut.fit.chlumant.mon3tize.billing.PurchaseListener

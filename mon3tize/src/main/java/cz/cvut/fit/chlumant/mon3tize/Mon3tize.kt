@@ -3,6 +3,7 @@ package cz.cvut.fit.chlumant.mon3tize
 import android.annotation.SuppressLint
 import android.content.Context
 import com.android.billingclient.api.*
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import cz.cvut.fit.chlumant.mon3tize.ads.AdActions
 import cz.cvut.fit.chlumant.mon3tize.ads.AdManager
@@ -62,6 +63,7 @@ public object Mon3tize {
         FirebaseApp.initializeApp(context)
         CoroutineScope(Dispatchers.IO).launch {
             billingManager.startConnection()
+            MobileAds.initialize(context) { }
         }
     }
 
